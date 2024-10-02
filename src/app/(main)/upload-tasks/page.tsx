@@ -5,83 +5,95 @@ type Props = {};
 export default function Page(props: Props) {
   return (
     <div className="w-full p-8">
+      {/* Page Header */}
       <PageHeader title="Hi CCCoach!!" />
 
       {/* Form Section */}
-      <div className="mt-8 flex">
-        <h2 className="text-lg font-semibold">Select the type of task to be assigned</h2>
+      <div className="mt-8">
+        {/* Task Type Selection */}
+        <div className="flex items-center">
+          <h2 className="text-lg font-semibold text-white">
+            Select the type of task to be assigned
+          </h2>
 
-        <div className="ml-5 space-x-6">
-          {/* Quiz Radio Button */}
-          <label className="inline-flex items-center">
-            <input
-              type="radio"
-              name="taskType"
-              value="quiz"
-              className="form-radio h-5 w-5 border border-white text-transparent checked:bg-darkblue checked:border-darkblue focus:ring-0"
-            />
-            <span className="ml-2 text-white-700">Quiz</span>
-          </label>
+          <div className="ml-5 space-x-6">
+            {/* Quiz Radio Button */}
+            <label className="inline-flex items-center">
+              <input
+                type="radio"
+                name="taskType"
+                value="quiz"
+                className="form-radio h-5 w-5 border border-white text-darkblue checked:bg-darkblue focus:ring-0"
+              />
+              <span className="ml-2 text-white">Quiz</span>
+            </label>
 
-          {/* Puzzle Radio Button */}
-          <label className="inline-flex items-center">
-            <input
-              type="radio"
-              name="taskType"
-              value="puzzle"
-              className="form-radio h-5 w-5 border border-white text-transparent checked:bg-darkblue checked:border-darkblue focus:ring-0"
-            />
-            <span className="ml-2 text-white-700">Puzzle</span>
-          </label>
+            {/* Puzzle Radio Button */}
+            <label className="inline-flex items-center">
+              <input
+                type="radio"
+                name="taskType"
+                value="puzzle"
+                className="form-radio h-5 w-5 border border-white text-darkblue checked:bg-darkblue focus:ring-0"
+              />
+              <span className="ml-2 text-white">Puzzle</span>
+            </label>
 
-          {/* Homework Radio Button */}
-          <label className="inline-flex items-center">
-            <input
-              type="radio"
-              name="taskType"
-              value="homework"
-              className="form-radio h-5 w-5 border border-white text-transparent checked:bg-darkblue checked:border-darkblue focus:ring-0"
-            />
-            <span className="ml-2 text-white-700">Homework</span>
-          </label>
-
+            {/* Homework Radio Button */}
+            <label className="inline-flex items-center">
+              <input
+                type="radio"
+                name="taskType"
+                value="homework"
+                className="form-radio h-5 w-5 border border-white text-darkblue checked:bg-darkblue focus:ring-0"
+              />
+              <span className="ml-2 text-white">Homework</span>
+            </label>
+          </div>
         </div>
-        <form className="mt-6 space-y-6">
-          <div>
-            <label className="block text-gray-300">Select Batch</label>
-            <select className="w-full mt-2 p-2 bg-transparent border border-gray-600 rounded text-gray-300">
+
+        <form className="mt-6 w-[50%] space-y-6">
+          {/* Select Batch */}
+          <div className="flex items-center">
+            <label className="text-gray-300 w-1/3">Select Batch</label>
+            <select className="w-2/3 p-3 bg-gray-700 border border-gray-500 rounded text-white">
               <option>Select Batch</option>
             </select>
           </div>
 
-          <div>
-            <label className="block text-gray-300">Select Students</label>
-            <select className="w-full mt-2 p-2 bg-transparent border border-gray-600 rounded text-gray-300">
+          {/* Select Students */}
+          <div className="flex items-center">
+            <label className="text-gray-300 w-1/3">Select Students</label>
+            <select className="w-2/3 p-3 bg-gray-700 border border-gray-500 rounded text-white">
               <option>Select Students</option>
             </select>
           </div>
 
-          <div>
-            <label className="block text-gray-300">Quiz Questions</label>
-            <select className="w-full mt-2 p-2 bg-transparent border border-gray-600 rounded text-gray-300">
+          {/* Quiz Questions */}
+          <div className="flex items-center">
+            <label className="text-gray-300 w-1/3">Quiz Questions</label>
+            <select className="w-2/3 p-3 bg-gray-700 border border-gray-500 rounded text-white">
               <option>Quiz Questions</option>
             </select>
           </div>
 
-          <div className="flex space-x-4">
-            <div className="w-full">
-              <label className="block text-gray-300">Start Date</label>
+          {/* Start Date and End Date */}
+          <div className="flex items-center space-x-4">
+            <div className="flex items-center w-1/2">
+              <label className="text-gray-300 w-1/3">Start Date</label>
               <input
                 type="date"
-                className="w-full mt-2 p-2 bg-transparent border border-gray-600 rounded text-gray-300"
+                className="w-2/3 p-3 bg-gray-700 border border-gray-500 rounded text-white"
+                placeholder="dd-mm-yyyy"
               />
             </div>
 
-            <div className="w-full">
-              <label className="block text-gray-300">End Date</label>
+            <div className="flex items-center w-1/2">
+              <label className="text-gray-300 w-1/3">End Date</label>
               <input
                 type="date"
-                className="w-full mt-2 p-2 bg-transparent border border-gray-600 rounded text-gray-300"
+                className="w-2/3 p-3 bg-gray-700 border border-gray-500 rounded text-white"
+                placeholder="dd-mm-yyyy"
               />
             </div>
           </div>
@@ -90,7 +102,7 @@ export default function Page(props: Props) {
           <div className="flex justify-center mt-6">
             <button
               type="submit"
-              className="bg-gray-600 hover:bg-gray-700 text-white py-2 px-4 rounded-lg"
+              className="w-1/2 bg-gray-600 hover:bg-gray-700 text-white py-3 px-6 rounded-lg"
             >
               Create Quiz
             </button>
