@@ -1,57 +1,84 @@
-import React from 'react';
+// components/PricingTable.tsx
+"use client";
+import React, { useState } from 'react';
 
 const PricingTable: React.FC = () => {
+  const [billingCycle, setBillingCycle] = useState<'monthly' | 'yearly'>('monthly');
+
   return (
-    <div className="flex justify-center items-center space-x-8 py-10">
-      {/* Introductory Card */}
-      <div className="bg-gray-900 text-white rounded-lg p-8 text-center w-64 shadow-lg transition-transform transform hover:-translate-y-3 hover:shadow-2xl">
-        <h2 className="text-2xl font-semibold">Introductory</h2>
-        <p className="text-4xl font-bold mt-4">$10/month</p>
-        <p className="text-sm text-gray-400 mt-2">Billed as $3455 a year</p>
-        <ul className="mt-6 space-y-3 text-sm">
-          <li>gaming experience</li>
-          <li>gaming experience</li>
-          <li>gaming experience</li>
-          <li>gaming experience</li>
-          <li>gaming experience</li>
-        </ul>
-        <button className="mt-6 bg-blue-600 hover:bg-blue-500 text-white font-medium py-2 px-4 rounded-md transition-colors">
-          SELECT PLAN
-        </button>
-      </div>
+    <div className="full min-w-max bg-[#1E2538] text-white flex items-center">
+      {/* Container with mx-auto */}
+      <div className="container mx-auto px-4">
+        {/* Header Section */}
+        <div className="flex justify-between items-center mb-8">
+          {/* Left Text */}
+          <div>
+            <h2 className="text-xl font-bold">Choose your Plan</h2>
+            <p className="text-gray-400 mt-2 text-sm">
+              Elevate your playing experience, Select the plan that is right for you
+            </p>
+          </div>
 
-      {/* Personal Card */}
-      <div className="bg-gray-900 text-white rounded-lg p-8 text-center w-64 shadow-lg transition-transform transform hover:-translate-y-3 hover:shadow-2xl">
-        <h2 className="text-2xl font-semibold">Personal</h2>
-        <p className="text-4xl font-bold mt-4">$20/month</p>
-        <p className="text-sm text-gray-400 mt-2">Billed as $3455 a year</p>
-        <ul className="mt-6 space-y-3 text-sm">
-          <li>gaming experience</li>
-          <li>gaming experience</li>
-          <li>gaming experience</li>
-          <li>gaming experience</li>
-          <li>gaming experience</li>
-        </ul>
-        <button className="mt-6 bg-blue-600 hover:bg-blue-500 text-white font-medium py-2 px-4 rounded-md transition-colors">
-          SELECT PLAN
-        </button>
-      </div>
+          {/* Right Buttons */}
+          <div className="flex items-center space-x-4">
+            <button className="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-lg">
+              Create Program
+            </button>
+            {/* Billing Cycle Toggle */}
+            <div className="flex items-center bg-[#1B2135] rounded-lg p-1">
+              <button
+                onClick={() => setBillingCycle('monthly')}
+                className={`py-2 px-4 rounded-lg ${billingCycle === 'monthly' ? 'bg-[#2F3A58] text-white' : 'text-gray-400'}`}
+              >
+                Monthly
+              </button>
+              <button
+                onClick={() => setBillingCycle('yearly')}
+                className={`py-2 px-4 rounded-lg ${billingCycle === 'yearly' ? 'bg-[#2F3A58] text-white' : 'text-gray-400'}`}
+              >
+                Yearly
+              </button>
+            </div>
+          </div>
+        </div>
 
-      {/* Professional Card */}
-      <div className="bg-gray-900 text-white rounded-lg p-8 text-center w-64 shadow-lg transition-transform transform hover:-translate-y-3 hover:shadow-2xl">
-        <h2 className="text-2xl font-semibold">Professional</h2>
-        <p className="text-4xl font-bold mt-4">$20/month</p>
-        <p className="text-sm text-gray-400 mt-2">Billed as $3455 a year</p>
-        <ul className="mt-6 space-y-3 text-sm">
-          <li>gaming experience</li>
-          <li>gaming experience</li>
-          <li>gaming experience</li>
-          <li>gaming experience</li>
-          <li>gaming experience</li>
-        </ul>
-        <button className="mt-6 bg-blue-600 hover:bg-blue-500 text-white font-medium py-2 px-4 rounded-md transition-colors">
-          SELECT PLAN
-        </button>
+        {/* Pricing Cards Section */}
+        <div className="flex justify-center space-x-6">
+          {[
+            { title: 'Introductory', price: 10 },
+            { title: 'Personal', price: 20 },
+            { title: 'Professional', price: 20 },
+          ].map((plan, idx) => (
+            <div
+              key={idx}
+              className="bg-[#1B2135] rounded-lg shadow-lg p-6 text-white transition-transform transform hover:scale-105 cursor-pointer w-64"
+            >
+              <h3 className="text-xl font-semibold">{plan.title}</h3>
+              <p className="text-3xl font-bold mt-4">
+                ${plan.price}
+                <span className="text-lg font-normal">/month</span>
+              </p>
+              <p className="text-gray-400 mt-2">Billed as $3455 a year</p>
+              <ul className="mt-6 space-y-2">
+                {[
+                  'gaming experience',
+                  'gaming experience',
+                  'gaming experience',
+                  'gaming experience',
+                  'gaming experience',
+                ].map((feature, featureIdx) => (
+                  <li key={featureIdx} className="flex items-center space-x-2">
+                    <span className="text-green-400">✔</span>
+                    <span>{feature}</span>
+                  </li>
+                ))}
+              </ul>
+              <button className="mt-6 bg-[#2F3A58] hover:bg-[#3b4a6d] text-white py-2 px-4 rounded-lg w-full">
+                Select Plan
+              </button>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );
