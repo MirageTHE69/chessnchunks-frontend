@@ -8,11 +8,11 @@ type Props = {
 
 export default function Layout({ children }: Props) {
   return (
-    <div className="h-screen w-full flex">
+    <div className="h-screen w-full flex overflow-hidden ">
       <Sidebar />
-      <div className="flex-1 ">
+      <div className="flex-1 h-full ">
         <Header />
-        <main className="p-4">{children}</main>
+        <main className="p-4  h-full overflow-y-auto">{children}</main>
       </div>
     </div>
   );
