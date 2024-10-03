@@ -1,10 +1,11 @@
 "use client";
 
+import { useRouter } from 'next/navigation'
 import { FaEnvelope, FaBell, FaCog, FaSearch } from 'react-icons/fa'; // Icons
 
 type Props = {};
-
 export const Header = (props: Props) => {
+  const router = useRouter();
   return (
     <header className="w-full bg-[#2A3147] py-4 px-6 flex justify-between items-center">
       {/* Search Bar */}
@@ -21,7 +22,10 @@ export const Header = (props: Props) => {
       <div className="flex space-x-6 text-white">
         <FaEnvelope className="cursor-pointer hover:text-gray-400" size={20} />
         <FaBell className="cursor-pointer hover:text-gray-400" size={20} />
-        <FaCog className="cursor-pointer hover:text-gray-400" size={20} />
+        <FaCog className="cursor-pointer hover:text-gray-400" size={20} onClick={(e) => {
+          router.push('/profile-settings');
+          e.preventDefault();
+        }} />
       </div>
     </header>
   );

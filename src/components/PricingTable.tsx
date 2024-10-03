@@ -6,7 +6,7 @@ const PricingTable: React.FC = () => {
   const [billingCycle, setBillingCycle] = useState<'monthly' | 'yearly'>('monthly');
 
   return (
-    <div className="full min-w-max bg-[#1E2538] text-white flex items-center">
+    <div className="full min-w-max  text-white flex items-center">
       {/* Container with mx-auto */}
       <div className="container mx-auto px-4">
         {/* Header Section */}
