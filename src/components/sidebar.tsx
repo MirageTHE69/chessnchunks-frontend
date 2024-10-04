@@ -8,7 +8,8 @@ type Props = {};
 
 export const Sidebar = (props: Props) => {
   return (
-    <aside className="h-full w-64 bg-black-secondary ">
+    <aside className="h-screen w-64 bg-black-secondary flex flex-col justify-between">
+      {/* Logo */}
       <div className="py-6">
         <div className="relative w-full h-28">
           <Link href="/">
@@ -24,7 +25,8 @@ export const Sidebar = (props: Props) => {
         </div>
       </div>
 
-      <nav className="space-y-2 mt-8">
+      {/* Navigation */}
+      <nav className="space-y-2 mt-8 flex-grow">
         {sidebarRoutes.map((route) => (
           <SidebarItem
             key={route.href}
@@ -35,7 +37,8 @@ export const Sidebar = (props: Props) => {
         ))}
       </nav>
 
-      <div className="px-5 mt-8">
+      {/* Subscribe Button */}
+      <div className="px-5 mb-6">
         <Button>Subscribe</Button>
       </div>
     </aside>

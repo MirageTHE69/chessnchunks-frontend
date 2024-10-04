@@ -2,15 +2,15 @@
 
 import { useState } from "react";
 import Image from "next/image";
-
+import { useRouter } from 'next/navigation'
 export default function LoginForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-
+  const router = useRouter();
   return (
     <div className="flex items-center justify-center h-screen bg-gray-900">
       <div className="bg-gray-800 p-10 rounded-lg shadow-lg w-96 gap-10">
-        
+
         {/* Flex container for welcome message and logo */}
         <div className="flex justify-between items-center mb-6">
           {/* Welcome Text Section */}
@@ -68,7 +68,11 @@ export default function LoginForm() {
             <button
               type="submit"
               className="w-full bg-blue-600 text-white py-2 mt-10 rounded hover:bg-blue-700 transition"
-            >
+              onClick={(e) => {
+                router.push('otp-verification')
+                e.preventDefault();
+              }}
+            >x
               Submit
             </button>
           </div>
