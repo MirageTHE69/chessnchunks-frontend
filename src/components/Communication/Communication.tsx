@@ -30,8 +30,8 @@ const CommunicationCoach: React.FC = () => {
     const [batches, setBatches] = useState<OptionType[]>([]);
     const [selectedBatches, setSelectedBatches] = useState<OptionType[]>([]);
     const [students, setStudents] = useState<OptionType[]>([]);
-    const [selectedStudents, setSelectedStudents] = useState<OptionType[]>([]);
     const [emailNotification, setEmailNotification] = useState(false);
+    const [selectedStudents, setSelectedStudents] = useState<OptionType[]>([]);
     const [conversationUser, setConversationUser] = useState("kalpesh_patil");
     const [messages, setMessages] = useState<Message[]>(mockMessages);
     const [newMessage, setNewMessage] = useState('');
@@ -66,6 +66,8 @@ const CommunicationCoach: React.FC = () => {
     const handleBatchSelectAll = () => {
         setSelectedBatches(selectedBatches.length === batches.length ? [] : batches);
     };
+    const isAllSelectedBatches = selectedBatches.length === batches.length;
+    const isAllSelectedStudents = selectedStudents.length === students.length;
 
     const handleStudentSelectAll = () => {
         setSelectedStudents(selectedStudents.length === students.length ? [] : students);
@@ -75,17 +77,31 @@ const CommunicationCoach: React.FC = () => {
         setConversationUser(userName);
     };
 
+
     const handleSendMessage = () => {
         if (newMessage.trim() === '') return;
 
+        // Create the message object using the current conversationUser as the sender
         const message: Message = {
-            sender: "kalpesh_patil",
+            sender: conversationUser, // Use the selected conversation user
             text: newMessage,
             time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
         };
 
-        setMessages([...messages, message]);
+        // Convert HTML to plain text (strip HTML tags)
+        const plainTextMessage = newMessage.replace(/<[^>]*>/g, '').trim();
+
+        // Update messages state with the new message
+        setMessages([...messages, { ...message, text: plainTextMessage }]);
+
+        // Clear the input after sending
         setNewMessage('');
+    };
+
+
+    const getLastMessage = (studentName: string) => {
+        const studentMessages = messages.filter(msg => msg.sender === studentName);
+        return studentMessages.length > 0 ? studentMessages[studentMessages.length - 1].text : "No messages yet";
     };
 
     // Custom option component for the select dropdown
@@ -145,7 +161,7 @@ const CommunicationCoach: React.FC = () => {
                             </div>
                             <div>
                                 <div className="text-white">{student.label}</div>
-                                <div className="text-gray-400 text-sm">Last message here...</div>
+                                <div className="text-gray-400 text-sm">{getLastMessage(student.label)}</div> {/* Updated to show last message */}
                             </div>
                         </li>
                     ))}
@@ -188,71 +204,89 @@ const CommunicationCoach: React.FC = () => {
                 <div className="flex-grow flex flex-col gap-4">
                     {/* Select Dropdowns */}
                     <div className="flex flex-col gap-4 mb-4">
-                        <Select
-                            options={batches}
-                            isMulti
-                            value={selectedBatches}
-                            // @ts-ignore
-                            onChange={setSelectedBatches}
-                            placeholder="Select Batch"
-                            styles={{
-                                control: (provided) => ({
-                                    ...provided,
-                                    backgroundColor: '#1f2937', // Set your desired background color
-                                    borderColor: '#374151', // Set border color
-                                    boxShadow: 'none',
-                                    '&:hover': {
-                                        borderColor: '#4b5563', // Set hover border color
-                                    },
-                                }),
-                                menu: (provided) => ({
-                                    ...provided,
-                                    backgroundColor: '#1f2937', // Same background color for dropdown
-                                    borderColor: '#374151',
-                                }),
-                                option: (provided, state) => ({
-                                    ...provided,
-                                    backgroundColor: state.isSelected ? '#4b5563' : '#1f2937', // Background for selected option
-                                    color: state.isSelected ? 'white' : 'white', // Text color
-                                    '&:hover': {
-                                        backgroundColor: '#374151', // Background on hover
-                                    },
-                                }),
-                            }}
-                        />
-                        <Select
-                            options={students}
-                            isMulti
-                            value={selectedStudents}
-                            // @ts-ignore
-                            onChange={setSelectedStudents}
-                            placeholder="Select Students"
-                            components={{ Option: CustomOption }} // Use the custom option component
-                            styles={{
-                                control: (provided) => ({
-                                    ...provided,
-                                    backgroundColor: '#1f2937', // Set your desired background color
-                                    borderColor: '#374151', // Set border color
-                                    boxShadow: 'none',
-                                    '&:hover': {
-                                        borderColor: '#4b5563', // Set hover border color
-                                    },
-                                }),
-                                menu: (provided) => ({
-                                    ...provided,
-                                    backgroundColor: '#1f2937', // Same background color for dropdown
-                                    borderColor: '#374151',
-                                }),
-                                option: (provided, state) => ({
-                                    ...provided,
-                                    backgroundColor: state.isSelected ? '#4b5563' : '#1f2937', // Background for selected option
-                                    color: state.isSelected ? 'white' : 'white', // Text color
-                                    '&:hover': {
-                                        backgroundColor: '#374151', // Background on hover
-                                    },
-                                }),
-                            }}
-                        />
+                        <div className="flex items-center mb-4"> {/* Wrap button and Select in a flex container */}
+                            <button
+                                onClick={handleBatchSelectAll}
+                                className="text-white bg-transparent rounded-md px-2 py-1 text-xs mb-2 mr-2 hover:bg-transparent focus:outline-none"
+                            >
+                                {isAllSelectedBatches ? 'Unselect All' : 'Select All'}
+                            </button>
+                            <Select
+                                options={batches}
+                                isMulti
+                                value={selectedBatches}
+                                // @ts-ignore
+                                onChange={setSelectedBatches}
+                                placeholder="Select Batch"
+                                styles={{
+                                    control: (provided) => ({
+                                        ...provided,
+                                        backgroundColor: '#1f2937',
+                                        borderColor: '#374151',
+                                        width: '1100px',
+                                        boxShadow: 'none',
+                                        '&:hover': {
+                                            borderColor: '#374151', // Maintain border color on hover
+                                        },
+                                    }),
+                                    menu: (provided) => ({
+                                        ...provided,
+                                        backgroundColor: '#1f2937',
+                                        borderColor: '#374151',
+                                    }),
+                                    option: (provided, state) => ({
+                                        ...provided,
+                                        backgroundColor: state.isSelected ? '#4b5563' : '#1f2937',
+                                        color: 'white',
+                                        '&:hover': {
+                                            backgroundColor: '#374151',
+                                        },
+                                    }),
+                                }}
+                            />
+                        </div>
+                        <div className="flex items-center mb-4">
+                            <button
+                                onClick={handleStudentSelectAll}
+                                className="text-white bg-transparent rounded-md px-2 py-1 text-xs mb-2 mr-2 hover:bg-transparent focus:outline-none"
+                            >
+                                {isAllSelectedStudents ? 'Unselect All' : 'Select All'}
+                            </button>
+                            <Select
+                                options={students}
+                                isMulti
+                                value={selectedStudents}
+                                // @ts-ignore
+                                onChange={setSelectedStudents}
+                                placeholder="Select Students"
+                                components={{ Option: CustomOption }} // Use the custom option component
+                                styles={{
+                                    control: (provided) => ({
+                                        ...provided,
+                                        backgroundColor: '#1f2937', // Set your desired background color
+                                        borderColor: '#374151', // Set border color
+                                        boxShadow: 'none',
+                                        width: '1100px',
+                                        '&:hover': {
+                                            borderColor: '#4b5563', // Set hover border color
+                                        },
+                                    }),
+                                    menu: (provided) => ({
+                                        ...provided,
+                                        backgroundColor: '#1f2937', // Same background color for dropdown
+                                        borderColor: '#374151',
+                                    }),
+                                    option: (provided, state) => ({
+                                        ...provided,
+                                        backgroundColor: state.isSelected ? '#4b5563' : '#1f2937', // Background for selected option
+                                        color: state.isSelected ? 'white' : 'white', // Text color
+                                        '&:hover': {
+                                            backgroundColor: '#374151', // Background on hover
+                                        },
+                                    }),
+                                }}
+                            />
+                        </div>
                     </div>
 
                     {/* Rich Text Editor */}
