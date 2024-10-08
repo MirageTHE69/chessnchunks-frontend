@@ -14,7 +14,8 @@ export default function Page(props: Props) {
     <div className="w-full p-6">
       {/* Page Header */}
       <div>
-        <PageHeader title="Game Settings" />
+        <PageHeader title="Game Settings" 
+        description=" "/>
       </div>
       
       {/* Settings Form aligned to the left */}
