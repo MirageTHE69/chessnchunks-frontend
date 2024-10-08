@@ -1,13 +1,11 @@
 import { PageHeader } from "@/components/page-header";
 
-type Props = {};
-
-export default function Page(props: Props) {
+// Remove the unused 'props' parameter as it's not required right now.
+export default function Page() {
   return (
-    <div className="w-full min-h-screen p-8  text-white">
+    <div className="w-full min-h-screen p-8 text-white">
       {/* Page Header */}
       <PageHeader title="Hi CCstudent!" />
-
       <div className="flex justify-between mt-6">
         {/* Left Section (Tasks and Schedule) */}
         <div className="flex flex-col w-3/4 pr-8">
@@ -55,7 +53,9 @@ export default function Page(props: Props) {
           <div className="mt-8">
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-2xl font-semibold">Schedule</h2>
-              <button className="text-blue-500 hover:underline">Edit schedule</button>
+              <button className="text-blue-500 hover:underline">
+                Edit schedule
+              </button>
             </div>
             {/* Time Blocks */}
             <div className="bg-[#1B2A41] rounded-lg p-4">
@@ -134,7 +134,9 @@ export default function Page(props: Props) {
                 >
                   <div>
                     <p className="font-semibold">{item.task}</p>
-                    <p className="text-gray-400 text-sm">Assigned by {item.assignee}</p>
+                    <p className="text-gray-400 text-sm">
+                      Assigned by {item.assignee}
+                    </p>
                   </div>
                   <span className="bg-gray-700 text-gray-300 px-2 py-1 rounded text-xs">
                     1D
@@ -146,12 +148,17 @@ export default function Page(props: Props) {
 
           {/* Matches */}
           <div className="bg-[#1B2A41] rounded-lg p-6">
-            <h4 className="text-xl font-semibold mb-4">Matches in next 2 hours</h4>
+            <h4 className="text-xl font-semibold mb-4">
+              Matches in next 2 hours
+            </h4>
             {[
               { time: "10:00 am", match: "knockout vs. joel90898" },
               { time: "11:00 am", match: "knockout vs. joel90898" },
             ].map((match, index) => (
-              <div key={index} className="flex justify-between text-gray-400 mb-4">
+              <div
+                key={index}
+                className="flex justify-between text-gray-400 mb-4"
+              >
                 <span>{match.time}</span>
                 <span className="text-white">{match.match}</span>
               </div>
