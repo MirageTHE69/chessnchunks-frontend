@@ -1,17 +1,16 @@
-"use client";  // Client-side component
-//@ts-nocheck
+"use client"; // Client-side component
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, ChangeEvent } from "react";
 import Image from "next/image";
 
 export default function OtpVerification() {
-  const [otp, setOtp] = useState(new Array(6).fill("")); // Array for 6 OTP inputs
+  const [otp, setOtp] = useState<string[]>(new Array(6).fill("")); // Array for 6 OTP inputs
   const [timer, setTimer] = useState(30); // Timer for resend OTP
 
   // Handle OTP input change
   const handleChange = (element: HTMLInputElement, index: number) => {
     const value = element.value;
-    if (isNaN(Number(value))) return; // Only allow numbers
+    if (isNaN(Number(value)) || value.length > 1) return; // Only allow numbers and single character
 
     const newOtp = [...otp];
     newOtp[index] = value;
@@ -54,7 +53,7 @@ export default function OtpVerification() {
 
         {/* OTP Input Instruction */}
         <p className="text-gray-400 text-center mb-4">
-          Enter the code sent on your E-mail ID
+          Enter the code sent to your E-mail ID
         </p>
 
         {/* OTP Input Fields */}
@@ -65,7 +64,7 @@ export default function OtpVerification() {
               type="text"
               maxLength={1}
               value={data}
-              onChange={(e) => handleChange(e.target, index)}
+              onChange={(e: ChangeEvent<HTMLInputElement>) => handleChange(e.target, index)}
               className="w-12 h-12 text-center text-white text-xl bg-gray-700 rounded-md focus:outline-none focus:ring focus:border-blue-500"
             />
           ))}

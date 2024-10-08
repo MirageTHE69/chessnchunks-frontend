@@ -4,6 +4,7 @@ import Select from 'react-select';
 import { FiInbox, FiEdit, FiSearch, FiMessageSquare, FiMinus, FiX } from 'react-icons/fi';
 import dynamic from 'next/dynamic';
 import 'react-quill/dist/quill.snow.css';
+import Image from 'next/image'; // Import Image from next/image
 
 const ReactQuill = dynamic(() => import('react-quill'), { ssr: false });
 
@@ -31,7 +32,6 @@ const CommunicationCoach: React.FC = () => {
     const [selectedBatches, setSelectedBatches] = useState<OptionType[]>([]);
     const [students, setStudents] = useState<OptionType[]>([]);
     const [selectedStudents, setSelectedStudents] = useState<OptionType[]>([]);
-    const [emailNotification, setEmailNotification] = useState(false);
     const [conversationUser, setConversationUser] = useState("kalpesh_patil");
     const [messages, setMessages] = useState<Message[]>(mockMessages);
     const [newMessage, setNewMessage] = useState('');
@@ -44,9 +44,9 @@ const CommunicationCoach: React.FC = () => {
         };
         const fetchStudents = async () => {
             setStudents([
-                { label: 'kalpesh_patil', value: 'kalpesh_patil', image: 'image.png' }, // Update with actual image paths
-                { label: 'nihar40000', value: 'nihar40000', image: 'image.png' },
-                { label: 'magnus_carlson', value: 'magnus_carlson', image: 'image.png' },
+                { label: 'kalpesh_patil', value: 'kalpesh_patil', image: '/images/kalpesh.png' }, // Update with actual image paths
+                { label: 'nihar40000', value: 'nihar40000', image: '/images/nihar.png' },
+                { label: 'magnus_carlson', value: 'magnus_carlson', image: '/images/magnus.png' },
             ]);
         };
         fetchBatches();
@@ -61,14 +61,6 @@ const CommunicationCoach: React.FC = () => {
         if (messagesEndRef.current) {
             messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
         }
-    };
-
-    const handleBatchSelectAll = () => {
-        setSelectedBatches(selectedBatches.length === batches.length ? [] : batches);
-    };
-
-    const handleStudentSelectAll = () => {
-        setSelectedStudents(selectedStudents.length === students.length ? [] : students);
     };
 
     const handleUserClick = (userName: string) => {
@@ -89,7 +81,7 @@ const CommunicationCoach: React.FC = () => {
     };
 
     // Custom option component for the select dropdown
-    const CustomOption = (props: any) => {
+    const CustomOption: React.FC<{ innerRef: any; innerProps: any; data: OptionType }> = (props) => {
         const { innerRef, innerProps, data } = props;
         return (
             <div
@@ -97,7 +89,7 @@ const CommunicationCoach: React.FC = () => {
                 {...innerProps}
                 className="flex items-center p-2 cursor-pointer hover:bg-gray-700"
             >
-                <img src={data.image} alt={data.label} className="w-8 h-8 rounded-full mr-2" />
+                <Image src={data.image || '/images/default.png'} alt={data.label} width={32} height={32} className="rounded-full mr-2" />
                 <span className="text-white">{data.label}</span>
             </div>
         );
@@ -141,7 +133,7 @@ const CommunicationCoach: React.FC = () => {
                     {students.map((student) => (
                         <li key={student.value} className="flex items-center p-2 cursor-pointer hover:bg-gray-700" onClick={() => handleUserClick(student.label)}>
                             <div className="w-8 h-8 rounded-full bg-gray-600 flex items-center justify-center mr-2">
-                                <img src={student.image} alt={student.label} className="w-full h-full rounded-full" />
+                                <Image src={student.image || '/images/default.png'} alt={student.label} width={32} height={32} className="rounded-full" />
                             </div>
                             <div>
                                 <div className="text-white">{student.label}</div>
@@ -173,7 +165,7 @@ const CommunicationCoach: React.FC = () => {
                         <div key={index} className={`flex items-center mb-4 ${msg.sender === conversationUser ? 'justify-end' : ''}`}>
                             {msg.sender !== conversationUser && (
                                 <div className="w-8 h-8 rounded-full bg-gray-600 flex items-center justify-center mr-2">
-                                    <img src={students.find(s => s.label === msg.sender)?.image} alt={msg.sender} className="w-full h-full rounded-full" />
+                                    <Image src={students.find(s => s.label === msg.sender)?.image || '/images/default.png'} alt={msg.sender} width={32} height={32} className="rounded-full" />
                                 </div>
                             )}
                             <div className={`bg-${msg.sender === conversationUser ? 'blue-600' : 'gray-300'} text-${msg.sender === conversationUser ? 'white' : 'black'} p-2 rounded-lg`}>
@@ -191,87 +183,27 @@ const CommunicationCoach: React.FC = () => {
                         <Select
                             options={batches}
                             isMulti
-                            value={selectedBatches}
-                            // @ts-ignore
-                            onChange={setSelectedBatches}
-                            placeholder="Select Batch"
-                            styles={{
-                                control: (provided) => ({
-                                    ...provided,
-                                    backgroundColor: '#1f2937', // Set your desired background color
-                                    borderColor: '#374151', // Set border color
-                                    boxShadow: 'none',
-                                    '&:hover': {
-                                        borderColor: '#4b5563', // Set hover border color
-                                    },
-                                }),
-                                menu: (provided) => ({
-                                    ...provided,
-                                    backgroundColor: '#1f2937', // Same background color for dropdown
-                                    borderColor: '#374151',
-                                }),
-                                option: (provided, state) => ({
-                                    ...provided,
-                                    backgroundColor: state.isSelected ? '#4b5563' : '#1f2937', // Background for selected option
-                                    color: state.isSelected ? 'white' : 'white', // Text color
-                                    '&:hover': {
-                                        backgroundColor: '#374151', // Background on hover
-                                    },
-                                }),
-                            }}
+                            placeholder="Select Batches..."
+                            onChange={(selected) => setSelectedBatches(selected as OptionType[])}
+                            className="text-black"
                         />
                         <Select
                             options={students}
                             isMulti
-                            value={selectedStudents}
-                            // @ts-ignore
-                            onChange={setSelectedStudents}
-                            placeholder="Select Students"
-                            components={{ Option: CustomOption }} // Use the custom option component
-                            styles={{
-                                control: (provided) => ({
-                                    ...provided,
-                                    backgroundColor: '#1f2937', // Set your desired background color
-                                    borderColor: '#374151', // Set border color
-                                    boxShadow: 'none',
-                                    '&:hover': {
-                                        borderColor: '#4b5563', // Set hover border color
-                                    },
-                                }),
-                                menu: (provided) => ({
-                                    ...provided,
-                                    backgroundColor: '#1f2937', // Same background color for dropdown
-                                    borderColor: '#374151',
-                                }),
-                                option: (provided, state) => ({
-                                    ...provided,
-                                    backgroundColor: state.isSelected ? '#4b5563' : '#1f2937', // Background for selected option
-                                    color: state.isSelected ? 'white' : 'white', // Text color
-                                    '&:hover': {
-                                        backgroundColor: '#374151', // Background on hover
-                                    },
-                                }),
-                            }}
+                            placeholder="Select Students..."
+                            onChange={(selected) => setSelectedStudents(selected as OptionType[])}
+                            className="text-black"
+                            components={{ Option: CustomOption }}
                         />
                     </div>
 
-                    {/* Rich Text Editor */}
+                    {/* Message Input */}
                     <div className="flex items-center">
-                        <ReactQuill
-                            theme="snow"
-                            style={{ height: '200px', marginBottom: '10px', width: '100%' }} // Adjusted width
-                            value={newMessage}
-                            onChange={setNewMessage}
-                        />
+                        <ReactQuill value={newMessage} onChange={setNewMessage} placeholder="Type your message here..." />
+                        <button onClick={handleSendMessage} className="p-2 bg-blue-600 text-white rounded ml-2">
+                            Send
+                        </button>
                     </div>
-
-                    {/* Send Button */}
-                    <button
-                        onClick={handleSendMessage}
-                        className="bg-blue-600 text-white py-2 px-4 rounded mt-4 hover:bg-blue-500"
-                    >
-                        Send
-                    </button>
                 </div>
             </div>
         </div>

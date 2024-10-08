@@ -1,4 +1,6 @@
 import { PageHeader } from "@/components/page-header";
+import Image from 'next/image';
+
 
 // Remove the unused 'props' parameter as it's not required right now.
 export default function Page() {
@@ -23,11 +25,13 @@ export default function Page() {
                     {Array(4)
                       .fill(0)
                       .map((_, i) => (
-                        <img
+                        <Image
                           key={i}
                           src={`/avatar-${i + 1}.svg`} // Ensure avatar images are correctly named
                           alt={`Avatar ${i + 1}`}
-                          className="w-8 h-8 rounded-full border-2 border-[#1B2A41]"
+                          width={32} // Specify width
+                          height={32} // Specify height
+                          className="rounded-full border-2 border-[#1B2A41]"
                         />
                       ))}
                   </div>
