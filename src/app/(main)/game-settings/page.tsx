@@ -3,9 +3,9 @@
 import { PageHeader } from "@/components/page-header";
 import { useState } from "react";
 
-type Props = Record<string, never>;
+// No need for Props type if you're not using any props
 
-export default function Page(props: Props) {
+export default function Page() {
   const [playSounds, setPlaySounds] = useState(false);
   const [highlightMoves, setHighlightMoves] = useState(false);
   const [hints, setHints] = useState(false);
@@ -14,7 +14,7 @@ export default function Page(props: Props) {
     <div className="w-full p-6">
       {/* Page Header */}
       <div>
-        <PageHeader title="Game Settings" description=" "/>
+        <PageHeader title="Game Settings" description="##"/>
       </div>
 
       {/* Settings Form aligned to the left */}
