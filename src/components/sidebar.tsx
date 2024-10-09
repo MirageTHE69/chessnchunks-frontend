@@ -4,9 +4,7 @@ import Link from "next/link";
 import { SidebarItem } from "./sidebar-item";
 import { Button } from "./button";
 
-type Props = {};
-
-export const Sidebar = (props: Props) => {
+export const Sidebar = () => {
   return (
     <aside className="h-screen w-64 bg-black-secondary flex flex-col justify-between">
       {/* Logo */}
