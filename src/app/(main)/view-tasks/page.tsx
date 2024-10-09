@@ -1,4 +1,5 @@
 import { PageHeader } from "@/components/page-header";
+import Image from "next/image";
 
 type Props = {};
 
@@ -25,11 +26,13 @@ export default function Page(props: Props) {
                     {Array(4)
                       .fill(0)
                       .map((_, i) => (
-                        <img
+                        <Image
                           key={i}
                           src={`/avatar-${i + 1}.svg`} // Ensure avatar images are correctly named
                           alt={`Avatar ${i + 1}`}
-                          className="w-8 h-8 rounded-full border-2 border-[#1B2A41]"
+                          width={32} // Use width of 32 pixels (8 * 4) for a size of 8 with Next.js Image
+                          height={32} // Use height of 32 pixels (8 * 4) for a size of 8 with Next.js Image
+                          className="rounded-full border-2 border-[#1B2A41]"
                         />
                       ))}
                   </div>
