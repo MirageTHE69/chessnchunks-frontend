@@ -1,11 +1,9 @@
 "use client";
 
-import { useRouter } from 'next/navigation'
-import { FaEnvelope, FaBell, FaCog, FaSearch } from 'react-icons/fa'; // Icons
-import Link from 'next/link';
-type Props = {};
-export const Header = (props: Props) => {
-  const router = useRouter();
+import { FaEnvelope, FaBell, FaCog, FaSearch } from "react-icons/fa"; // Icons
+import Link from "next/link";
+
+export const Header = () => {
   return (
     <header className="w-full bg-[#2A3147] py-4 px-6 flex justify-between items-center">
       {/* Search Bar */}
@@ -21,7 +19,10 @@ export const Header = (props: Props) => {
       {/* Icons */}
       <div className="flex space-x-6 text-white">
         <Link href="/chat-communication">
-          <FaEnvelope className="cursor-pointer hover:text-gray-400" size={20} />
+          <FaEnvelope
+            className="cursor-pointer hover:text-gray-400"
+            size={20}
+          />
         </Link>
         <FaBell className="cursor-pointer hover:text-gray-400" size={20} />
         <Link href="/profile-settings">
