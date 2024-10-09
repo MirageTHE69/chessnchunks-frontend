@@ -1,3 +1,4 @@
+"use client";
 import Image from 'next/image';
 import React from 'react';
 import { FaChess } from 'react-icons/fa';
@@ -5,6 +6,10 @@ import { GiBullseye } from 'react-icons/gi';
 import { GrRobot } from 'react-icons/gr';
 
 function StudentDersiliedDashboard() {
+    const handleButtonClick = () => {
+        // Add your button click handler logic here
+        console.log('Button clicked!');
+    };
     return (
         <div className="p-6 bg-gray-900 text-white min-h-screen relative">
             {/* Top Section for Trophy Image and Rank */}
@@ -83,8 +88,14 @@ function StudentDersiliedDashboard() {
 
                         {/* Central Button */}
                         <div className="absolute w-20 h-20 bg-gray-700 rounded-full flex flex-col items-center justify-center z-10 text-white text-center">
-                            <FaChess className="text-3xl" />
-                            <p className="text-xs mt-1">Choose<br />Your Battle</p>
+                            <button
+                                className="absolute w-20 h-20 bg-gray-700 rounded-full flex flex-col items-center justify-center z-10 text-white text-center focus:outline-none focus:ring-2 focus:ring-blue-500 hover:bg-gray-600 transition-colors"
+                                onClick={handleButtonClick}
+                                aria-label="Choose Your Battle"
+                            >
+                                <FaChess className="text-3xl" />
+                                <p className="text-xs mt-1">Choose<br />Your Battle</p>
+                            </button>
                         </div>
 
                         {/* Buttons for Battle Options */}
@@ -232,7 +243,7 @@ function StudentDersiliedDashboard() {
                             height={50}  // Adjust size as needed
                             className="object-contain"
                         />
-                        <GiBullseye 
+                        <GiBullseye
                             className="absolute text-white text-3xl top-[40%] left-1/2 transform -translate-x-1/2 -translate-y-1/2"
                         />
                         <p className="font-bold text-xs">Online</p>

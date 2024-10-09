@@ -1,4 +1,5 @@
 "use client";
+import Image from 'next/image';
 import React, { useState, useEffect } from 'react';
 import { FaChessKnight, FaCommentDots, FaTrashAlt } from 'react-icons/fa';
 
@@ -78,7 +79,7 @@ const Batchmates: React.FC = () => {
                         ))}
                     </div>
                 )}
-                
+
                 <div className="mt-6">
                     <h2 className="text-lg font-semibold mb-4">Batchmates</h2>
                     {filteredBatchmates.map((batchmate) => (
@@ -86,14 +87,16 @@ const Batchmates: React.FC = () => {
                             <div className="flex items-center">
                                 {/* Profile Picture */}
                                 <div className="relative mr-4">
-                                    <img
-                                        src="https://via.placeholder.com/50"
+                                    <Image
+                                        src="/image.png"
                                         alt="Profile"
-                                        className="w-12 h-12 rounded-full"
+                                        className="w-16 h-16 rounded-full"
+                                        width={64} // Ensure this matches the width of your image (16 * 4 for the default w-16 class)
+                                        height={64} // Ensure this matches the height of your image (16 * 4 for the default w-16 class)
                                     />
                                     {batchmate.online && <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full"></span>}
                                 </div>
-                                
+
                                 {/* Batchmate Info */}
                                 <div>
                                     <div className="font-semibold flex items-center">

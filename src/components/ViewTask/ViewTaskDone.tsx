@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import React from 'react';
 import { FaCheckCircle, FaChess, FaTimesCircle } from 'react-icons/fa';
 
@@ -117,10 +118,16 @@ const ViewTaskStudent = () => {
 };
 
 /* TaskCard Component */
-const TaskCard = ({ title, image, tasksCompleted, percentage }:any) => (
+const TaskCard = ({ title, image, tasksCompleted, percentage }: any) => (
     <div className="bg-gradient-to-br from-gray-200 via-gray-100 to-gray-200 p-4 rounded-lg shadow relative">
         {/* Image at top left */}
-        <img src={image} alt={title} className="w-10 h-10 absolute top-4 left-4" />
+        <Image
+            src={image}
+            alt={title}
+            width={40} // Use width of 40 pixels (10 * 4) for a size of 10 with Next.js Image
+            height={40} // Use height of 40 pixels (10 * 4) for a size of 10 with Next.js Image
+            className="absolute top-4 left-4"
+        />
         {/* Title */}
         <h4 className="text-lg font-bold text-black">{title}</h4>
         {/* Task details */}
@@ -133,14 +140,14 @@ const TaskCard = ({ title, image, tasksCompleted, percentage }:any) => (
 );
 
 /* ProgressCircle Component */
-const ProgressCircle = ({ percentage }:any) => (
+const ProgressCircle = ({ percentage }: any) => (
     <div className="w-16 h-16 bg-gray-900 rounded-full flex items-center justify-center">
         <div className="text-blue-500 text-2xl font-bold">{percentage}%</div>
     </div>
 );
 
 /* ScheduleItem Component */
-const ScheduleItem = ({ time, activity }:any) => (
+const ScheduleItem = ({ time, activity }: any) => (
     <div className="bg-gray-900 p-2 rounded-lg flex justify-between">
         <p className="text-gray-400">{time}</p>
         <p className="text-white">{activity}</p>
@@ -148,7 +155,7 @@ const ScheduleItem = ({ time, activity }:any) => (
 );
 
 /* ShortTaskCard Component */
-const ShortTaskCard = ({ label, color, description }:any) => (
+const ShortTaskCard = ({ label, color, description }: any) => (
     <div className="flex justify-between items-center bg-gray-700 p-2 rounded">
         <p className="text-xs text-white">{description}</p>
         <span className={`px-2 py-1 rounded-full text-xs text-white ${color}`}>{label}</span>
@@ -156,7 +163,7 @@ const ShortTaskCard = ({ label, color, description }:any) => (
 );
 
 /* TaskItem Component */
-const TaskItem = ({ task, description, icon, iconBg }:any) => (
+const TaskItem = ({ task, description, icon, iconBg }: any) => (
     <div className="flex justify-between items-center bg-gray-900 p-2 rounded-lg">
         <div className="flex items-center space-x-3">
             <div className={`p-2 rounded-full ${iconBg}`}>

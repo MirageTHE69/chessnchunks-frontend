@@ -2,7 +2,7 @@
 
 import { useRouter } from 'next/navigation'
 import { FaEnvelope, FaBell, FaCog, FaSearch } from 'react-icons/fa'; // Icons
-
+import Link from 'next/link';
 type Props = {};
 export const Header = (props: Props) => {
   const router = useRouter();
@@ -20,12 +20,13 @@ export const Header = (props: Props) => {
 
       {/* Icons */}
       <div className="flex space-x-6 text-white">
-        <FaEnvelope className="cursor-pointer hover:text-gray-400" size={20} />
+        <Link href="/chat-communication">
+          <FaEnvelope className="cursor-pointer hover:text-gray-400" size={20} />
+        </Link>
         <FaBell className="cursor-pointer hover:text-gray-400" size={20} />
-        <FaCog className="cursor-pointer hover:text-gray-400" size={20} onClick={(e) => {
-          router.push('/profile-settings');
-          e.preventDefault();
-        }} />
+        <Link href="/profile-settings">
+          <FaCog className="cursor-pointer hover:text-gray-400" size={20} />
+        </Link>
       </div>
     </header>
   );

@@ -1,5 +1,5 @@
 import { PageHeader } from "@/components/page-header";
-import Image from 'next/image';
+import Image from "next/image";
 
 
 // Remove the unused 'props' parameter as it's not required right now.
@@ -29,8 +29,8 @@ export default function Page() {
                           key={i}
                           src={`/avatar-${i + 1}.svg`} // Ensure avatar images are correctly named
                           alt={`Avatar ${i + 1}`}
-                          width={32} // Specify width
-                          height={32} // Specify height
+                          width={32} // Use width of 32 pixels (8 * 4) for a size of 8 with Next.js Image
+                          height={32} // Use height of 32 pixels (8 * 4) for a size of 8 with Next.js Image
                           className="rounded-full border-2 border-[#1B2A41]"
                         />
                       ))}
