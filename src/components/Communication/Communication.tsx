@@ -4,6 +4,7 @@ import Select from 'react-select';
 import { FiInbox, FiEdit, FiSearch, FiMessageSquare, FiMinus, FiX } from 'react-icons/fi';
 import dynamic from 'next/dynamic';
 import 'react-quill/dist/quill.snow.css';
+import Image from 'next/image';
 
 const ReactQuill = dynamic(() => import('react-quill'), { ssr: false });
 
@@ -30,7 +31,6 @@ const CommunicationCoach: React.FC = () => {
     const [batches, setBatches] = useState<OptionType[]>([]);
     const [selectedBatches, setSelectedBatches] = useState<OptionType[]>([]);
     const [students, setStudents] = useState<OptionType[]>([]);
-    const [emailNotification, setEmailNotification] = useState(false);
     const [selectedStudents, setSelectedStudents] = useState<OptionType[]>([]);
     const [conversationUser, setConversationUser] = useState("kalpesh_patil");
     const [messages, setMessages] = useState<Message[]>(mockMessages);
@@ -44,7 +44,7 @@ const CommunicationCoach: React.FC = () => {
         };
         const fetchStudents = async () => {
             setStudents([
-                { label: 'kalpesh_patil', value: 'kalpesh_patil', image: 'image.png' }, // Update with actual image paths
+                { label: 'kalpesh_patil', value: 'kalpesh_patil', image: 'image.png' },
                 { label: 'nihar40000', value: 'nihar40000', image: 'image.png' },
                 { label: 'magnus_carlson', value: 'magnus_carlson', image: 'image.png' },
             ]);
@@ -77,27 +77,19 @@ const CommunicationCoach: React.FC = () => {
         setConversationUser(userName);
     };
 
-
     const handleSendMessage = () => {
         if (newMessage.trim() === '') return;
 
-        // Create the message object using the current conversationUser as the sender
         const message: Message = {
-            sender: conversationUser, // Use the selected conversation user
+            sender: conversationUser,
             text: newMessage,
             time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
         };
 
-        // Convert HTML to plain text (strip HTML tags)
         const plainTextMessage = newMessage.replace(/<[^>]*>/g, '').trim();
-
-        // Update messages state with the new message
         setMessages([...messages, { ...message, text: plainTextMessage }]);
-
-        // Clear the input after sending
         setNewMessage('');
     };
-
 
     const getLastMessage = (studentName: string) => {
         const studentMessages = messages.filter(msg => msg.sender === studentName);
@@ -107,14 +99,22 @@ const CommunicationCoach: React.FC = () => {
     // Custom option component for the select dropdown
     const CustomOption = (props: any) => {
         const { innerRef, innerProps, data } = props;
+        const studentImage = data.image ? `/${data.image}` : '/fallback-image.png';
+
         return (
             <div
                 ref={innerRef}
                 {...innerProps}
                 className="flex items-center p-2 cursor-pointer hover:bg-gray-700"
             >
-                <img src={data.image} alt={data.label} className="w-8 h-8 rounded-full mr-2" />
-                <span className="text-white">{data.label}</span>
+                <Image
+                    src={studentImage}
+                    alt={data.label}
+                    width={32}
+                    height={32}
+                    className="rounded-full"
+                />
+                <span className="text-white ml-2">{data.label}</span>
             </div>
         );
     };
@@ -123,7 +123,6 @@ const CommunicationCoach: React.FC = () => {
         <div className="flex h-screen bg-gray-900">
             {/* Left Sidebar */}
             <div className="w-1/4 bg-gray-800 text-white p-4">
-                {/* Inbox and Unread */}
                 <div className="flex items-center mb-6">
                     <button className="flex flex-col items-center relative mr-6">
                         <FiMessageSquare size={24} />
@@ -140,7 +139,6 @@ const CommunicationCoach: React.FC = () => {
                     </button>
                 </div>
 
-                {/* Compose and Search Buttons */}
                 <div className="flex mb-8">
                     <button className="flex items-center justify-center gap-2 p-3 bg-gray-700 rounded text-white text-sm hover:bg-gray-600 w-full mr-2">
                         <FiEdit size={20} />
@@ -152,25 +150,28 @@ const CommunicationCoach: React.FC = () => {
                     </button>
                 </div>
 
-                {/* Chat List */}
                 <ul>
                     {students.map((student) => (
                         <li key={student.value} className="flex items-center p-2 cursor-pointer hover:bg-gray-700" onClick={() => handleUserClick(student.label)}>
                             <div className="w-8 h-8 rounded-full bg-gray-600 flex items-center justify-center mr-2">
-                                <img src={student.image} alt={student.label} className="w-full h-full rounded-full" />
+                                <Image
+                                    src={student.image ? `/${student.image}` : '/fallback-image.png'}
+                                    alt={student.label}
+                                    width={32}
+                                    height={32}
+                                    className="rounded-full"
+                                />
                             </div>
                             <div>
                                 <div className="text-white">{student.label}</div>
-                                <div className="text-gray-400 text-sm">{getLastMessage(student.label)}</div> {/* Updated to show last message */}
+                                <div className="text-gray-400 text-sm">{getLastMessage(student.label)}</div>
                             </div>
                         </li>
                     ))}
                 </ul>
             </div>
 
-            {/* Main Content */}
             <div className="w-3/4 p-6 bg-gray-800 text-white flex flex-col">
-                {/* Conversation Header */}
                 <div className="flex justify-between items-center border-b pb-3 mb-4">
                     <h2 className="text-xl font-semibold">Conversation with {conversationUser}</h2>
                     <div className="flex items-center gap-2">
@@ -183,13 +184,20 @@ const CommunicationCoach: React.FC = () => {
                     </div>
                 </div>
 
-                {/* Messages */}
                 <div className="flex flex-col mt-6 overflow-y-auto flex-grow" style={{ maxHeight: '400px' }}>
                     {messages.map((msg, index) => (
                         <div key={index} className={`flex items-center mb-4 ${msg.sender === conversationUser ? 'justify-end' : ''}`}>
                             {msg.sender !== conversationUser && (
                                 <div className="w-8 h-8 rounded-full bg-gray-600 flex items-center justify-center mr-2">
-                                    <img src={students.find(s => s.label === msg.sender)?.image} alt={msg.sender} className="w-full h-full rounded-full" />
+                                    <Image
+                                        src={students.find(s => s.label === msg.sender)?.image
+                                            ? `/${students.find(s => s.label === msg.sender)?.image}`
+                                            : '/fallback-image.png'}
+                                        alt={msg.sender}
+                                        width={32}
+                                        height={32}
+                                        className="rounded-full"
+                                    />
                                 </div>
                             )}
                             <div className={`bg-${msg.sender === conversationUser ? 'blue-600' : 'gray-300'} text-${msg.sender === conversationUser ? 'white' : 'black'} p-2 rounded-lg`}>
@@ -198,102 +206,88 @@ const CommunicationCoach: React.FC = () => {
                             <span className="text-gray-400 text-sm ml-2">{msg.time}</span>
                         </div>
                     ))}
-                    <div ref={messagesEndRef} /> {/* For scrolling to the bottom */}
+                    <div ref={messagesEndRef} />
                 </div>
 
-                <div className="flex-grow flex flex-col gap-4">
-                    {/* Select Dropdowns */}
-                    <div className="flex flex-col gap-4 mb-4">
-                        <div className="flex items-center mb-4"> {/* Wrap button and Select in a flex container */}
-                            <button
-                                onClick={handleBatchSelectAll}
-                                className="text-white bg-transparent rounded-md px-2 py-1 text-xs mb-2 mr-2 hover:bg-transparent focus:outline-none"
-                            >
-                                {isAllSelectedBatches ? 'Unselect All' : 'Select All'}
-                            </button>
-                            <Select
-                                options={batches}
-                                isMulti
-                                value={selectedBatches}
-                                // @ts-ignore
-                                onChange={setSelectedBatches}
-                                placeholder="Select Batch"
-                                styles={{
-                                    control: (provided) => ({
-                                        ...provided,
-                                        backgroundColor: '#1f2937',
-                                        borderColor: '#374151',
-                                        width: '1100px',
-                                        boxShadow: 'none',
-                                        '&:hover': {
-                                            borderColor: '#374151', // Maintain border color on hover
-                                        },
-                                    }),
-                                    menu: (provided) => ({
-                                        ...provided,
-                                        backgroundColor: '#1f2937',
-                                        borderColor: '#374151',
-                                    }),
-                                    option: (provided, state) => ({
-                                        ...provided,
-                                        backgroundColor: state.isSelected ? '#4b5563' : '#1f2937',
-                                        color: 'white',
-                                        '&:hover': {
-                                            backgroundColor: '#374151',
-                                        },
-                                    }),
-                                }}
-                            />
-                        </div>
-                        <div className="flex items-center mb-4">
-                            <button
-                                onClick={handleStudentSelectAll}
-                                className="text-white bg-transparent rounded-md px-2 py-1 text-xs mb-2 mr-2 hover:bg-transparent focus:outline-none"
-                            >
-                                {isAllSelectedStudents ? 'Unselect All' : 'Select All'}
-                            </button>
-                            <Select
-                                options={students}
-                                isMulti
-                                value={selectedStudents}
-                                // @ts-ignore
-                                onChange={setSelectedStudents}
-                                placeholder="Select Students"
-                                components={{ Option: CustomOption }} // Use the custom option component
-                                styles={{
-                                    control: (provided) => ({
-                                        ...provided,
-                                        backgroundColor: '#1f2937', // Set your desired background color
-                                        borderColor: '#374151', // Set border color
-                                        boxShadow: 'none',
-                                        width: '1100px',
-                                        '&:hover': {
-                                            borderColor: '#4b5563', // Set hover border color
-                                        },
-                                    }),
-                                    menu: (provided) => ({
-                                        ...provided,
-                                        backgroundColor: '#1f2937', // Same background color for dropdown
-                                        borderColor: '#374151',
-                                    }),
-                                    option: (provided, state) => ({
-                                        ...provided,
-                                        backgroundColor: state.isSelected ? '#4b5563' : '#1f2937', // Background for selected option
-                                        color: state.isSelected ? 'white' : 'white', // Text color
-                                        '&:hover': {
-                                            backgroundColor: '#374151', // Background on hover
-                                        },
-                                    }),
-                                }}
-                            />
-                        </div>
-                    </div>
+                <div className="my-6">
+                    <label className="block text-sm font-medium text-gray-300 mb-2">Batch</label>
+                    <Select
+                        options={batches}
+                        isMulti
+                        value={selectedBatches}
+                        onChange={(selected) => setSelectedBatches(selected as OptionType[])}
+                        placeholder="Select Batch"
+                        styles={{
+                            control: (provided) => ({
+                                ...provided,
+                                backgroundColor: '#2d3748',
+                                color: 'white',
+                                border: '1px solid #4a5568', // Border styling
+                                boxShadow: 'none',
+                                '&:hover': {
+                                    border: '1px solid #a0aec0',
+                                },
+                            }),
+                            menu: (provided) => ({ ...provided, backgroundColor: '#2d3748' }),
+                            option: (provided, state) => ({
+                                ...provided,
+                                backgroundColor: state.isSelected ? '#4a5568' : '#2d3748',
+                                color: 'white',
+                            }),
+                        }}
+                        className="text-white"
+                    />
+                    <button
+                        onClick={handleBatchSelectAll}
+                        className="mt-2 p-2 bg-gray-700 text-white rounded hover:bg-gray-600"
+                    >
+                        {isAllSelectedBatches ? 'Deselect All' : 'Select All'}
+                    </button>
+                </div>
 
-                    {/* Rich Text Editor */}
-                    <div className="flex items-center">
+                <div className="my-6">
+                    <label className="block text-sm font-medium text-gray-300 mb-2">Student</label>
+                    <Select
+                        options={students}
+                        isMulti
+                        value={selectedStudents}
+                        onChange={(selected) => setSelectedStudents(selected as OptionType[])}
+                        placeholder="Select Student"
+                        components={{ Option: CustomOption }}
+                        styles={{
+                            control: (provided) => ({
+                                ...provided,
+                                backgroundColor: '#2d3748',
+                                color: 'white',
+                                border: '1px solid #4a5568', // Border styling
+                                boxShadow: 'none',
+                                '&:hover': {
+                                    border: '1px solid #a0aec0',
+                                },
+                            }),
+                            menu: (provided) => ({ ...provided, backgroundColor: '#2d3748' }),
+                            option: (provided, state) => ({
+                                ...provided,
+                                backgroundColor: state.isSelected ? '#4a5568' : '#2d3748',
+                                color: 'white',
+                            }),
+                        }}
+                        className="text-white"
+                    />
+                    <button
+                        onClick={handleStudentSelectAll}
+                        className="mt-2 p-2 bg-gray-700 text-white rounded hover:bg-gray-600"
+                    >
+                        {isAllSelectedStudents ? 'Deselect All' : 'Select All'}
+                    </button>
+                </div>
+
+                {/* Rich Text Editor */}
+                <div className="flex flex-col mb-4"> {/* Make it a flex column to stack editor and button */}
+                    <div className="mb-2"> {/* Add margin bottom for spacing */}
                         <ReactQuill
                             theme="snow"
-                            style={{ height: '200px', marginBottom: '10px', width: '100%' }} // Adjusted width
+                            style={{ height: '200px', width: '100%' }} // Keep full width
                             value={newMessage}
                             onChange={setNewMessage}
                         />
@@ -302,7 +296,7 @@ const CommunicationCoach: React.FC = () => {
                     {/* Send Button */}
                     <button
                         onClick={handleSendMessage}
-                        className="bg-blue-600 text-white py-2 px-4 rounded mt-4 hover:bg-blue-500"
+                        className="bg-blue-600 text-white py-2 px-4 mt-10 rounded hover:bg-blue-500"
                     >
                         Send
                     </button>

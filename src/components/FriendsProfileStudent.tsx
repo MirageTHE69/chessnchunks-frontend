@@ -1,4 +1,10 @@
+import Image from 'next/image';
 import React from 'react';
+import ReactCountryFlag from "react-country-flag";
+import { BsPuzzle } from 'react-icons/bs';
+import { FaChess } from 'react-icons/fa6';
+import { GoBook } from 'react-icons/go';
+import { TiUser } from 'react-icons/ti';
 
 const FriendsProfileStudent = () => {
     const games = [
@@ -19,10 +25,12 @@ const FriendsProfileStudent = () => {
                         {/* Profile Section */}
                         <div className="bg-gray-800 p-6 rounded-lg mb-6 relative">
                             <div className="flex items-center space-x-4">
-                                <img
+                                <Image
                                     src="/image.png"
                                     alt="Profile"
                                     className="w-16 h-16 rounded-full"
+                                    width={64} // Ensure this matches the width of your image (16 * 4 for the default w-16 class)
+                                    height={64} // Ensure this matches the height of your image (16 * 4 for the default w-16 class)
                                 />
                                 <div>
                                     <h2 className="text-white text-xl font-bold">CCstudent</h2>
@@ -74,15 +82,19 @@ const FriendsProfileStudent = () => {
                                                 <div className="flex flex-col space-y-1">
                                                     {/* Player 1 */}
                                                     <div className="flex items-center space-x-2">
-                                                        <img src="/react-icon.png" alt="Player Icon" className="w-6 h-6" />
+                                                        <TiUser />
                                                         <span>CCstudent</span>
-                                                        <span>🇮🇳</span>
+                                                        <div className="flex flex-col items-center">
+                                                            <ReactCountryFlag countryCode="IN" svg style={{ width: '1.5em', height: '1.5em' }} />
+                                                        </div>
                                                     </div>
                                                     {/* Player 2 */}
                                                     <div className="flex items-center space-x-2">
-                                                        <img src="/react-icon.png" alt="Player Icon" className="w-6 h-6" />
+                                                        <TiUser />
                                                         <span>CCstudent2</span>
-                                                        <span>🇺🇸</span>
+                                                        <div className="flex flex-col items-center">
+                                                            <ReactCountryFlag countryCode="US" svg style={{ width: '1.5em', height: '1.5em' }} />
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </td>
@@ -96,7 +108,7 @@ const FriendsProfileStudent = () => {
                                                     </div>
 
                                                     {/* Result Circle - Vertically between Player 1 and Player 2 with Left Margin */}
-                                                    <div className="my-2 ml-8"> {/* Added left margin */}
+                                                    <div className="my-2 ml-8">
                                                         {game.result === '1-0' ? (
                                                             <span className="text-green-500">&#x25CF;</span> // Green filled circle for player 1 win
                                                         ) : (
@@ -123,6 +135,7 @@ const FriendsProfileStudent = () => {
                                             <td className="p-2">{game.date}</td>
                                         </tr>
                                     ))}
+
                                 </tbody>
                             </table>
                         </div>
@@ -135,7 +148,7 @@ const FriendsProfileStudent = () => {
                         {/* Trophy Section */}
                         <div className="bg-gray-800 text-white p-6 rounded-lg text-center">
                             <img
-                                src="/trophy.png"
+                                src="/gridicons_trophy.png"
                                 alt="Trophy"
                                 className="w-12 h-12 mx-auto mb-2"
                             />
@@ -149,21 +162,21 @@ const FriendsProfileStudent = () => {
                             <div className="space-y-4">
                                 <div className="flex justify-between items-center">
                                     <div className="flex items-center space-x-2">
-                                        <img src="/chess-icon.png" alt="Chess Icon" className="w-5 h-5" />
+                                        <FaChess />
                                         <span>Games</span>
                                     </div>
                                     <span>1</span>
                                 </div>
                                 <div className="flex justify-between items-center">
                                     <div className="flex items-center space-x-2">
-                                        <img src="/puzzle-icon.png" alt="Puzzle Icon" className="w-5 h-5" />
+                                        <BsPuzzle />
                                         <span>Puzzles</span>
                                     </div>
                                     <span>1</span>
                                 </div>
                                 <div className="flex justify-between items-center">
                                     <div className="flex items-center space-x-2">
-                                        <img src="/lesson-icon.png" alt="Lesson Icon" className="w-5 h-5" />
+                                        <GoBook />
                                         <span>Lessons</span>
                                     </div>
                                     <span>1</span>

@@ -135,12 +135,12 @@ const Dashboard: React.FC = () => {
                         </div>
 
                         {/* Button at the center of the circular layout */}
-                        <div className="absolute inset-0 flex items-center justify-center">
+                        {/* <div className="absolute inset-0 flex items-center justify-center">
                             <button className="bg-white text-black p-3 rounded-full text-sm">
                                 <img src="/chess_icon.png" alt="Chess Icon" className="w-6 h-6 inline-block mr-2" />
                                 Choose Your Battle
                             </button>
-                        </div>
+                        </div> */}
                     </div>
 
 
@@ -163,10 +163,17 @@ const Dashboard: React.FC = () => {
                         </div>
 
                         {/* Central Button */}
-                        <div className="absolute w-16 h-16 bg-gray-700 rounded-full flex items-center justify-center z-10">
+                        <button
+                            className="absolute w-16 h-16 bg-gray-700 rounded-full flex items-center justify-center z-10 focus:outline-none focus:ring-2 focus:ring-blue-500 hover:bg-gray-600 transition-colors"
+                            onClick={() => {
+                                // Add your button click handler logic here
+                                console.log('Button clicked!');
+                            }}
+                            aria-label="Choose Your Battle"
+                        >
                             <FaChess className="text-white text-3xl" />
                             <p className="text-sm mt-1 text-center">Choose<br />Your Battle</p>
-                        </div>
+                        </button>
 
                         {/* Buttons for Battle Options */}
                         <div className="absolute top-0 left-1/2 transform -translate-x-1/2">
