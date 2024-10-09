@@ -1,8 +1,8 @@
+"use client";  // Add this line to make it a Client Component
+
 import { PageHeader } from "@/components/page-header";
 
-type Props = {};
-
-export default function Page(props: Props) {
+export default function Page() {
   return (
     <div className="w-full bg-gray-800 flex flex-col p-6 ">
       <PageHeader title="Profile settings" />

@@ -97,7 +97,7 @@ const CommunicationCoach: React.FC = () => {
     };
 
     // Custom option component for the select dropdown
-    const CustomOption = (props: any) => {
+    const CustomOption: React.FC<{ innerRef: any; innerProps: any; data: OptionType }> = (props) => {
         const { innerRef, innerProps, data } = props;
         const studentImage = data.image ? `/${data.image}` : '/fallback-image.png';
 
@@ -161,6 +161,7 @@ const CommunicationCoach: React.FC = () => {
                                     height={32}
                                     className="rounded-full"
                                 />
+
                             </div>
                             <div>
                                 <div className="text-white">{student.label}</div>
@@ -208,7 +209,6 @@ const CommunicationCoach: React.FC = () => {
                     ))}
                     <div ref={messagesEndRef} />
                 </div>
-
                 <div className="my-6">
                     <label className="block text-sm font-medium text-gray-300 mb-2">Batch</label>
                     <Select
