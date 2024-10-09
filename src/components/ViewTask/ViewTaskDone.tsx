@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import React from "react";
 import { FaCheckCircle, FaChess, FaTimesCircle } from "react-icons/fa";
 
@@ -80,7 +81,7 @@ const ViewTaskStudent = () => {
           {/* 10 Tasks Today Section */}
           <div className="flex justify-between items-center mb-4">
             <h3 className="text-sm font-bold">10 tasks today</h3>
-            <p className="text-blue-400 cursor-pointer">View all</p>
+            <Link href="/view-tasks">  <p className="text-blue-400 cursor-pointer">View all</p></Link>
           </div>
 
           <div className="space-y-4">

@@ -1,6 +1,7 @@
 "use client";  // Add this line to make it a Client Component
 
 import { PageHeader } from "@/components/page-header";
+import Link from "next/link";
 import { useState } from "react";
 
 type Props = {};
@@ -113,12 +114,14 @@ export default function Page(props: Props) {
 
           {/* Save Button */}
           <div className="text-center mt-6">
+            <Link href="/friends-profile-student">
             <button
               type="submit"
               className="bg-gray-700 text-white px-6 py-2 rounded-lg"
             >
               Save
             </button>
+            </Link>
           </div>
         </form>
       </div>

@@ -1,5 +1,6 @@
 // components/PricingTable.tsx
 "use client";
+import Link from 'next/link';
 import React, { useState } from 'react';
 
 const PricingTable: React.FC = () => {
@@ -73,9 +74,10 @@ const PricingTable: React.FC = () => {
                   </li>
                 ))}
               </ul>
-              <button className="mt-6 bg-[#2F3A58] hover:bg-[#3b4a6d] text-white py-2 px-4 rounded-lg w-full">
+              <Link href="/payment-page"> <button className="mt-6 bg-[#2F3A58] hover:bg-[#3b4a6d] text-white py-2 px-4 rounded-lg w-full">
                 Select Plan
               </button>
+              </Link>
             </div>
           ))}
         </div>

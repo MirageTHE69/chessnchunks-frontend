@@ -20,22 +20,22 @@ const sidebarRoutes: SidebarRoute[] = [
   {
     name: "Play",
     icon: LuMonitorPlay,
-    href: "/play",
+    href: "/play-with-batch",
   },
   {
     name: "Puzzle run",
     icon: FaPuzzlePiece,
-    href: "/puzzle-run",
+    href: "/assign-puzzle-coach",
   },
   {
     name: "Quiz",
     icon: MdOutlineQuiz,
-    href: "/quiz",
+    href: "/assign-quiz-coach",
   },
   {
     name: "Learn",
     icon: GoGoal,
-    href: "/learn",
+    href: "/assign-homework-coach",
   },
 ];
 

@@ -1,5 +1,6 @@
 "use client";
 import Image from 'next/image';
+import Link from 'next/link';
 import React from 'react';
 import { FaChess } from 'react-icons/fa';
 import { GiBullseye } from 'react-icons/gi';
@@ -94,7 +95,7 @@ function StudentDersiliedDashboard() {
                                 aria-label="Choose Your Battle"
                             >
                                 <FaChess className="text-3xl" />
-                                <p className="text-xs mt-1">Choose<br />Your Battle</p>
+                                <Link href="/play-with-batch">"<p className="text-xs mt-1">Choose<br />Your Battle</p></Link>
                             </button>
                         </div>
 

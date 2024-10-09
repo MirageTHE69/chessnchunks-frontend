@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import React from "react";
 import { FaChess } from "react-icons/fa"; // Import chess icon
 
@@ -171,8 +172,8 @@ const Dashboard: React.FC = () => {
                             }}
                             aria-label="Choose Your Battle"
                         >
-                            <FaChess className="text-white text-3xl" />
-                            <p className="text-sm mt-1 text-center">Choose<br />Your Battle</p>
+                            <Link href="/play-with-batch"><FaChess className="text-white text-3xl" />
+                            <p className="text-sm mt-1 text-center">Choose<br />Your Battle</p></Link>
                         </button>
 
                         {/* Buttons for Battle Options */}
