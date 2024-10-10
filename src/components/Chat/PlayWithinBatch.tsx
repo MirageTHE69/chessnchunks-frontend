@@ -18,7 +18,7 @@ const Batchmates: React.FC = () => {
     const [batchmates, setBatchmates] = useState<Batchmate[]>([]);
     const [showSuggestions, setShowSuggestions] = useState<boolean>(false);
 
-    // Fetch batchmates data (Simulated here, replace with API call)
+    // Raise PR comment
     useEffect(() => {
         const fetchBatchmates = async () => {
             const data: Batchmate[] = [
@@ -91,8 +91,8 @@ const Batchmates: React.FC = () => {
                                         src="/image.png"
                                         alt="Profile"
                                         className="w-16 h-16 rounded-full"
-                                        width={64} // Ensure this matches the width of your image (16 * 4 for the default w-16 class)
-                                        height={64} // Ensure this matches the height of your image (16 * 4 for the default w-16 class)
+                                        width={64} 
+                                        height={64} 
                                     />
                                     {batchmate.online && <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full"></span>}
                                 </div>
