@@ -4,9 +4,9 @@ import { PageHeader } from "@/components/page-header";
 import Link from "next/link";
 import { useState } from "react";
 
-type Props = {};
 
-export default function Page(props: Props) {
+
+export default function Page() {
   const [playSounds, setPlaySounds] = useState(false);
   const [highlightMoves, setHighlightMoves] = useState(false);
   const [hints, setHints] = useState(false);
