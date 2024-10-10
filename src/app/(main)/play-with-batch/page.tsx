@@ -1,6 +1,8 @@
 import React from "react";
 import { PageHeader } from "@/components/page-header";
 import { FaChess, FaComments, FaMinusCircle, FaBan } from "react-icons/fa";
+import Image from "next/image";
+import Link from "next/link";
 
 const friends = [
   {
@@ -51,10 +53,12 @@ const PricingTablePage: React.FC = () => {
               >
                 {/* Left Section: Avatar and Info */}
                 <div className="flex items-center space-x-4">
-                  <img
+                  <Image
                     src={`/avatar-${friend.id}.png`} // Placeholder for avatar image
                     alt={friend.fullName}
-                    className="w-12 h-12 rounded-full"
+                    width={48} // Set the width in pixels (12 * 4, since Tailwind's `w-12` is 3rem or 48px)
+                    height={48} // Set the height in pixels (12 * 4, since Tailwind's `h-12` is 3rem or 48px)
+                    className="rounded-full"
                   />
                   <div>
                     <div className="flex items-center space-x-2">
@@ -73,9 +77,10 @@ const PricingTablePage: React.FC = () => {
                     <span>Challenge</span>
                   </button>
                   {/* Message Button */}
-                  <button className="bg-gray-700 text-gray-300 px-3 py-1 rounded-md">
+                 <Link href="chat-communication"> <button className="bg-gray-700 text-gray-300 px-3 py-1 rounded-md">
                     <FaComments />
                   </button>
+                  </Link>
                   {/* Unfriend Button */}
                   <button className="bg-gray-700 text-gray-300 px-3 py-1 rounded-md">
                     <FaMinusCircle />

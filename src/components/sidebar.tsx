@@ -37,7 +37,8 @@ export const Sidebar = () => {
 
       {/* Subscribe Button */}
       <div className="px-5 mb-6">
-        <Button>Subscribe</Button>
+        <Link href="/pricing-table">
+          <Button>Subscribe</Button></Link>
       </div>
     </aside>
   );

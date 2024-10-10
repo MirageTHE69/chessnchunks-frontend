@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import Link from 'next/link';
 import React from 'react';
 import ReactCountryFlag from "react-country-flag";
 import { BsPuzzle } from 'react-icons/bs';
@@ -44,12 +45,14 @@ const FriendsProfileStudent = () => {
                             </div>
 
                             <div className="flex mt-4 space-x-4">
-                                <button className="bg-gray-600 text-white px-4 py-2 rounded-md">
+                            <Link href="/play-within-batch"> <button className="bg-gray-600 text-white px-4 py-2 rounded-md">
                                     Challenge
                                 </button>
-                                <button className="bg-gray-600 text-white px-4 py-2 rounded-md">
+                                </Link>
+                                <Link href="/chat-communication"><button className="bg-gray-600 text-white px-4 py-2 rounded-md">
                                     Message
                                 </button>
+                                </Link>
                                 <button className="bg-gray-600 text-white px-4 py-2 rounded-md">
                                     Remove Friend
                                 </button>

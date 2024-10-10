@@ -2,6 +2,7 @@
 
 import { useState, useEffect, ChangeEvent } from "react";
 import Image from "next/image";
+import Link from "next/link";
 
 export default function OtpVerification() {
   const [otp, setOtp] = useState<string[]>(new Array(6).fill("")); // Array for 6 OTP inputs
@@ -86,12 +87,14 @@ export default function OtpVerification() {
 
         {/* Submit Button */}
         <div className="text-center">
+          <Link href="/student-dashboard">
           <button
             type="submit"
             className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition"
           >
             Submit
           </button>
+          </Link>
         </div>
       </div>
     </div>

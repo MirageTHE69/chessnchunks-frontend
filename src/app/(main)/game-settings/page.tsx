@@ -1,11 +1,12 @@
 "use client";  // Add this line to make it a Client Component
 
 import { PageHeader } from "@/components/page-header";
+import Link from "next/link";
 import { useState } from "react";
 
-// No need for Props type if you're not using any props
+type Props = {};
 
-export default function Page() {
+export default function Page(props: Props) {
   const [playSounds, setPlaySounds] = useState(false);
   const [highlightMoves, setHighlightMoves] = useState(false);
   const [hints, setHints] = useState(false);
@@ -14,9 +15,9 @@ export default function Page() {
     <div className="w-full p-6">
       {/* Page Header */}
       <div>
-        <PageHeader title="Game Settings" description=" "/>
+        <PageHeader title="Game Settings" />
       </div>
-
+      
       {/* Settings Form aligned to the left */}
       <div className="bg-gray-800 p-8 rounded-lg shadow-lg mt-6 w-[40%]">
         <form className="space-y-4">
@@ -113,12 +114,14 @@ export default function Page() {
 
           {/* Save Button */}
           <div className="text-center mt-6">
+            <Link href="/friends-profile-student">
             <button
               type="submit"
               className="bg-gray-700 text-white px-6 py-2 rounded-lg"
             >
               Save
             </button>
+            </Link>
           </div>
         </form>
       </div>
