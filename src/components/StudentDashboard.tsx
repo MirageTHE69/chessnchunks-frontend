@@ -20,7 +20,7 @@ const battles: Battle[] = [
 
 const Dashboard: React.FC = () => {
     return (
-        <div className="p-6 bg-gray-900 text-white min-h-screen">
+        <div className="p-6  text-white   pb-32">
             {/* Top Section */}
             <div className="grid grid-cols-4 gap-4 mb-8">
                 <div className="flex items-center space-x-3">
@@ -80,11 +80,10 @@ const Dashboard: React.FC = () => {
                 </div>
             </div>
 
-
-            <div className="grid grid-cols-3 gap-4">
+            <div className="grid grid-cols-3 gap-6">
                 {/* Left Side - Last 5 Battles */}
                 <div className="col-span-1">
-                    <div className="bg-gray-800 p-6 rounded-lg mb-8">
+                    <div className="bg-gray-900 p-6 rounded-lg mb-8">
                         <h2 className="text-xl font-bold mb-4">Last 5 Battles</h2>
                         <table className="w-full text-left">
                             <thead>
@@ -107,7 +106,7 @@ const Dashboard: React.FC = () => {
                     </div>
 
                     {/* Overall Ratings */}
-                    <div className="bg-gray-800 p-6 rounded-lg flex flex-col items-center">
+                    <div className="bg-gray-900 p-6 rounded-lg flex flex-col items-center">
                         <h2 className="text-xl font-bold mb-6">Overall Ratings</h2>
 
                         {/* Grid container for AI, Academy, Batch, Friends */}
@@ -134,82 +133,40 @@ const Dashboard: React.FC = () => {
                             <p className="text-2xl font-bold">5892</p>
                             <p className="text-sm">Online</p>
                         </div>
-
-                        {/* Button at the center of the circular layout */}
-                        {/* <div className="absolute inset-0 flex items-center justify-center">
-                            <button className="bg-white text-black p-3 rounded-full text-sm">
-                                <img src="/chess_icon.png" alt="Chess Icon" className="w-6 h-6 inline-block mr-2" />
-                                Choose Your Battle
-                            </button>
-                        </div> */}
                     </div>
-
-
-
                 </div>
 
-                {/* Right Side - Ready to Play (Circular Battle Selection) */}
-                <div className="col-span-2 bg-gray-800 p-6 rounded-lg flex flex-col items-center relative">
+                {/* Right Side - Vertical Button Layout */}
+                <div className="col-span-2 bg-gray-900 p-6 rounded-lg flex flex-col items-center relative">
                     <h2 className="text-xl font-bold mb-4">Ready to Play? Pick Your Match!</h2>
 
-                    <div className="relative w-80 h-80 flex items-center justify-center">
-                        {/* Chessboard-like background */}
-                        <div className="absolute w-full h-full bg-gradient-to-b from-gray-700 to-gray-800 rounded-full">
-                            <div className="absolute inset-0 grid grid-cols-2 grid-rows-2">
-                                <div className="bg-gray-900"></div>
-                                <div className="bg-gray-800"></div>
-                                <div className="bg-gray-800"></div>
-                                <div className="bg-gray-900"></div>
-                            </div>
-                        </div>
+                    {/* Buttons in a Column with equal width */}
+                    <div className="flex flex-col space-y-4 w-full items-center">
+                        {['AI', 'Academy', 'Batch', 'Friends', 'Online'].map((match, index) => (
+                            <button 
+                                key={index}
+                                className="bg-gray-700 py-4 w-48 rounded-full text-white text-lg transition duration-300 hover:bg-gray-600"
+                            >
+                                {match}
+                            </button>
+                        ))}
+                    </div>
 
-                        {/* Central Button */}
+                    {/* Central "Choose Your Battle" Button */}
+                    <div className="mt-6">
                         <button
-                            className="absolute w-16 h-16 bg-gray-700 rounded-full flex items-center justify-center z-10 focus:outline-none focus:ring-2 focus:ring-blue-500 hover:bg-gray-600 transition-colors"
+                            className="bg-gray-700 py-4 px-6 rounded-lg flex items-center space-x-2 text-white text-lg focus:outline-none focus:ring-2 focus:ring-blue-500 hover:bg-gray-600 transition-colors"
                             onClick={() => {
-                                // Add your button click handler logic here
-                                console.log('Button clicked!');
+                                console.log('Choose Your Battle clicked!');
                             }}
-                            aria-label="Choose Your Battle"
                         >
-                            <Link href="/play-with-batch"><FaChess className="text-white text-3xl" />
-                            <p className="text-sm mt-1 text-center">Choose<br />Your Battle</p></Link>
+                            <FaChess className="text-white text-3xl" />
+                            <p>Choose Your Battle</p>
                         </button>
-
-                        {/* Buttons for Battle Options */}
-                        <div className="absolute top-0 left-1/2 transform -translate-x-1/2">
-                            <button className="bg-red-600 p-4 rounded-full text-center text-white">
-                                <div>AI</div>
-                            </button>
-                        </div>
-
-                        <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2">
-                            <button className="bg-teal-600 p-4 rounded-full text-center text-white">
-                                <div>Batch</div>
-                            </button>
-                        </div>
-
-                        <div className="absolute left-0 top-1/2 transform -translate-y-1/2">
-                            <button className="bg-yellow-500 p-4 rounded-full text-center text-white">
-                                <div>Academy</div>
-                            </button>
-                        </div>
-
-                        <div className="absolute right-0 top-1/2 transform -translate-y-1/2">
-                            <button className="bg-green-500 p-4 rounded-full text-center text-white">
-                                <div>Friends</div>
-                            </button>
-                        </div>
-
-                        <div className="absolute right-0 bottom-0 transform translate-x-2 translate-y-2">
-                            <button className="bg-orange-500 p-4 rounded-full text-center text-white">
-                                <div>Online</div>
-                            </button>
-                        </div>
                     </div>
 
                     {/* Adjusted "View More" Button */}
-                    <button className="absolute bottom-4 right-4 bg-blue-700 px-4 py-2 rounded text-white text-sm">
+                    <button className="absolute bottom-4 right-4 bg-blue-700 px-4 py-2 rounded text-white text-sm hover:bg-blue-600 transition duration-300">
                         View More
                     </button>
                 </div>
