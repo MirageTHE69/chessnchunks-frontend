@@ -1,10 +1,19 @@
+"use client";
+
 import sidebarRoutes from "@/constants/sidebar-routes";
 import Image from "next/image";
 import Link from "next/link";
 import { SidebarItem } from "./sidebar-item";
 import { Button } from "./button";
+import { usePathname } from "next/navigation";
 
 export const Sidebar = () => {
+  const pathname = usePathname();
+
+  const isHideSidebar = ["/sign-up"].includes(pathname);
+
+  if (isHideSidebar) return null;
+
   return (
     <aside className="h-screen w-64 bg-black-secondary flex flex-col justify-between">
       {/* Logo */}
@@ -38,7 +47,8 @@ export const Sidebar = () => {
       {/* Subscribe Button */}
       <div className="px-5 mb-6">
         <Link href="/pricing-table">
-          <Button>Subscribe</Button></Link>
+          <Button type="submit">Subscribe</Button>
+        </Link>
       </div>
     </aside>
   );

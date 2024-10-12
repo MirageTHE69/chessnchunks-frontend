@@ -1,4 +1,4 @@
-"use client";  // Client-side component
+"use client";
 
 import { useState } from "react";
 import Image from "next/image";

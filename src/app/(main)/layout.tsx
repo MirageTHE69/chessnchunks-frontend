@@ -12,7 +12,7 @@ export default function Layout({ children }: Props) {
       <Sidebar />
       <div className="flex-1 h-full ">
         <Header />
-        <main className="p-4  h-full overflow-y-auto">{children}</main>
+        <main className="p-4 h-full overflow-y-auto">{children}</main>
       </div>
     </div>
   );

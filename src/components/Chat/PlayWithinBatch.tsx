@@ -74,7 +74,7 @@ const Batchmates: React.FC = () => {
                                     setShowSuggestions(false);
                                 }}
                             >
-                                {batchmate.name} ({batchmate.username})
+                                {batchmate.name} ({batchmate.username})=
                             </div>
                         ))}
                     </div>
