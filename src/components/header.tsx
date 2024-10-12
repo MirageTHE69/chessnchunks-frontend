@@ -2,8 +2,15 @@
 
 import { FaEnvelope, FaBell, FaCog, FaSearch } from "react-icons/fa"; // Icons
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 export const Header = () => {
+  const pathname = usePathname();
+
+  const isHideSidebar = ["/sign-up"].includes(pathname);
+
+  if (isHideSidebar) return null;
+
   return (
     <header className="w-full bg-[#2A3147] py-4 px-6 flex justify-between items-center">
       {/* Search Bar */}

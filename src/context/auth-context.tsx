@@ -8,11 +8,15 @@ interface AuthContextType {
   logoutUser: () => void;
 }
 
-export const AuthContext = createContext<AuthContextType | undefined>(undefined);
+export const AuthContext = createContext<AuthContextType | undefined>(
+  undefined
+);
 
 export default function AuthProvider({ children }: { children: ReactNode }) {
   const [initialState, setInitialState] = useState({
-    user: JSON.parse(localStorage.getItem("user") || "null"),
+    user: localStorage.getItem("user")
+      ? JSON.parse(localStorage.getItem("user") ?? "{}")
+      : null,
     token: localStorage.getItem("token"),
   });
 
