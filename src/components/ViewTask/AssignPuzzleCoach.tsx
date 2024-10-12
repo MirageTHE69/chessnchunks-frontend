@@ -3,7 +3,7 @@ import React from 'react';
 
 const AssignPuzzleCoach = () => {
     return (
-        <div className="min-h-screen p-8 bg-gray-900 text-white flex flex-col">
+        <div className="min-h-screen p-8  text-white flex flex-col">
             <h1 className="text-2xl font-bold mb-4">Hi CCCoach!</h1>
 
             <p className="mb-4">Select the type of task to be assigned:</p>
