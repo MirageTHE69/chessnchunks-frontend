@@ -11,7 +11,7 @@ const StudentVerification = () => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [mfaEnabled, setMfaEnabled] = useState(false);
   const [profileImage, setProfileImage] = useState<string | null>(null);
-  const [signUp, { isLoading, error }] = useSignUpMutation();
+  const [signUp] = useSignUpMutation();
   const router = useRouter();
 
   const [allInputs, setAllInputs] = useState({
@@ -109,7 +109,7 @@ const StudentVerification = () => {
         });
         router.push("/login");
       }
-    } catch (error) {
+    } catch (_) {
       toast.error("Registration failed!", {
         description: "An unexpected error occurred.",
       });
