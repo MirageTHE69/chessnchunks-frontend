@@ -1,31 +1,54 @@
 "use client";
 
-import { useState } from "react";
+import React, { useState } from "react";
 import Image from "next/image";
-import { useRouter } from 'next/navigation'
+import { useRouter } from "next/navigation";
+import Cookies from "js-cookie";
+import { useLoginMutation } from "@/api/userApi";
 
 export default function LoginForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [loginMethod, setLoginMethod] = useState("password"); // Added state for login method
+  const [loginMethod, setLoginMethod] = useState("password");
   const router = useRouter();
+  const [login, { isLoading, error }] = useLoginMutation();
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    try {
+      if (loginMethod === "password") {
+        const { data } = await login({ email, password });
+
+        console.log("DATA", data);
+
+        if (data) {
+          Cookies.set("auth-token", data.token, { expires: 7, path: "/" });
+
+          router.push("/student-dashboard");
+        }
+      } else {
+        router.push("/otp-verification");
+      }
+    } catch (err) {
+      console.error("Login failed:", err);
+    }
+  };
 
   return (
-    <div className="flex items-center justify-center h-screen ">
+    <div className="flex items-center justify-center h-screen">
       <div className="bg-gray-900 p-10 rounded-lg shadow-lg w-[50%] gap-10">
-
         {/* Flex container for welcome message and logo */}
         <div className="flex justify-between items-center mb-6">
-          {/* Welcome Text Section */}
           <div className="flex-1">
-            <h2 className="text-2xl text-white font-semibold mb-1">Welcome Back</h2>
+            <h2 className="text-2xl text-white font-semibold mb-1">
+              Welcome Back
+            </h2>
             <p className="text-gray-400">Pickup where you left</p>
           </div>
-
-          {/* Logo Section */}
           <div className="relative h-16 w-16 ml-4">
             <Image
-              src="/chessnchunks-logo.svg" // Ensure this is the correct path to your logo
+              src="/chessnchunks-logo.svg"
               alt="Chess n Chunks"
               layout="fill"
               objectFit="contain"
@@ -36,7 +59,7 @@ export default function LoginForm() {
         </div>
 
         {/* Form */}
-        <form>
+        <form onSubmit={handleLogin}>
           {/* Radio buttons for login method */}
           <div className="mb-4 flex justify-around">
             <label className="text-gray-300">
@@ -88,7 +111,7 @@ export default function LoginForm() {
                   className="w-full px-3 py-2 bg-gray-700 text-gray-300 rounded focus:outline-none focus:ring focus:border-blue-500"
                 />
                 <span className="absolute right-3 top-3 text-gray-400 cursor-pointer">
-                  👁️ {/* You can replace this with an eye icon for show/hide password functionality */}
+                  👁️ {/* Icon for show/hide password */}
                 </span>
               </div>
             </div>
@@ -99,18 +122,19 @@ export default function LoginForm() {
             <button
               type="submit"
               className="w-full bg-blue-600 text-white py-2 mt-10 rounded hover:bg-blue-700 transition"
-              onClick={(e) => {
-                e.preventDefault();
-                if (loginMethod === "otp") {
-                  router.push('otp-verification');
-                } else {
-                  // Submit form for email/password login
-                  console.log("Login with Email and Password:", { email, password });
-                }
-              }}
+              disabled={isLoading}
             >
-              {loginMethod === "otp" ? "Next" : "Submit"}
+              {isLoading
+                ? "Processing..."
+                : loginMethod === "otp"
+                ? "Next"
+                : "Submit"}
             </button>
+            {error && (
+              <p className="mt-2 text-red-500 text-sm">
+                Login failed. Please try again.
+              </p>
+            )}
           </div>
         </form>
       </div>

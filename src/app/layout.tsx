@@ -1,6 +1,5 @@
 "use client";
 import React from "react";
-import AuthProvider from "@/context/auth-context";
 import LoginOTPProvider from "@/context/login-otp-context";
 import { DM_Sans } from "next/font/google";
 import "./globals.css";
@@ -21,21 +20,19 @@ export default function RootLayout({
 }) {
   return (
     <ApiProvider api={baseApi}>
-      <AuthProvider>
-        <LoginOTPProvider>
-          <html lang="en">
-            <Toaster />
-            <body
-              className={cn(
-                dmSans.className,
-                "min-h-screen bg-black-primary text-white"
-              )}
-            >
-              {children}
-            </body>
-          </html>
-        </LoginOTPProvider>
-      </AuthProvider>
+      <LoginOTPProvider>
+        <html lang="en">
+          <Toaster />
+          <body
+            className={cn(
+              dmSans.className,
+              "min-h-screen bg-black-primary text-white"
+            )}
+          >
+            {children}
+          </body>
+        </html>
+      </LoginOTPProvider>
     </ApiProvider>
   );
 }

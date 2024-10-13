@@ -84,6 +84,7 @@ const StudentVerification = () => {
         toast.success("Registered successfully!", {
           description: "You can now log in with your new account.",
         });
+
         setAllInputs({
           dob: "",
           age: null,
