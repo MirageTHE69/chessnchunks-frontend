@@ -10,7 +10,9 @@ import { usePathname } from "next/navigation";
 export const Sidebar = () => {
   const pathname = usePathname();
 
-  const isHideSidebar = ["/sign-up", "/login"].includes(pathname);
+  const isHideSidebar = ["/sign-up", "/login", "/otp-verification"].includes(
+    pathname
+  );
 
   if (isHideSidebar) return null;
 

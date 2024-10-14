@@ -1,283 +1,280 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { FiMessageSquare, FiInbox, FiMinus, FiX } from "react-icons/fi";
-import Image from "next/image";
 import Select from "react-select";
-
-interface Message {
-  sender: string;
-  text: string;
-  time: string;
-}
-
-const mockMessages = [
-  { sender: "student1", text: "Hey, how are you?", time: "12:00 PM" },
-  {
-    sender: "student2",
-    text: "I'm good, thanks! How about you?",
-    time: "12:01 PM",
-  },
-  {
-    sender: "student1",
-    text: "Doing well! Just finishing an assignment.",
-    time: "12:02 PM",
-  },
-];
-
-const friendsList = [
-  { label: "student1", value: "student1", image: "/student1.png" },
-  { label: "student2", value: "student2", image: "/student2.png" },
-  { label: "student3", value: "student3", image: "/student3.png" },
-];
-
-const students = [
-  { label: "student1", value: "student1" },
-  { label: "student2", value: "student2" },
-  { label: "student3", value: "student3" },
-];
-
-const batches = [
-  { label: "Batch 1", value: "batch1" },
-  { label: "Batch 2", value: "batch2" },
-  { label: "Batch 3", value: "batch3" },
-];
+import { io } from "socket.io-client";
+import { useSession } from "next-auth/react";
+import { useFetchBatchForOptionsQuery } from "@/api/batchApi";
+import { useLazyFetchAllStudentsQuery } from "@/api/studentApi";
+import { useGetMessagesQuery, useSendMessageMutation } from "@/api/messageApi";
+import { Message, Student } from "@/types";
 
 const CoachCommunication: React.FC = () => {
-  const [conversationUser, setConversationUser] = useState("student1");
-  const [messages, setMessages] = useState<Message[]>(mockMessages);
-  const [newMessage, setNewMessage] = useState("");
-  const [selectedStudents, setSelectedStudents] = useState<any[]>([]);
-  const [selectedBatches, setSelectedBatches] = useState<any[]>([]);
+  const [conversationUser, setConversationUser] = useState<string | null>(null);
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [newMessage, setNewMessage] = useState<string>("");
+  const [selectedBatch, setSelectedBatch] = useState<any>(null);
+  const [selectedStudent, setSelectedStudent] = useState<any>(null);
 
-  const handleUserClick = (userName: string) => {
-    setConversationUser(userName);
+  const { data: session } = useSession();
+
+  const [sendMessage, { isLoading: isSending }] = useSendMessageMutation();
+
+  // Fetch batches
+  const { data: batchesData, isLoading: batchesLoading } =
+    useFetchBatchForOptionsQuery({});
+
+  const { data: messageHistory, refetch: refetchMessages } =
+    useGetMessagesQuery(selectedStudent?.value, {
+      skip: !selectedStudent,
+    });
+
+  useEffect(() => {
+    if (messageHistory) {
+      setMessages(messageHistory);
+    }
+  }, [messageHistory]);
+
+  const [
+    fetchAllStudents,
+    {
+      data: studentsData,
+      isLoading: studentsLoading,
+      isFetching: studentsFetching,
+    },
+  ] = useLazyFetchAllStudentsQuery();
+
+  const handleBatchChange = (selected: any) => {
+    setSelectedBatch(selected);
+    setSelectedStudent(null);
+    setConversationUser(null);
+    if (selected) {
+      fetchAllStudents(selected.value);
+    }
   };
 
-  const handleSendMessage = () => {
-    if (newMessage.trim() === "") return;
-
-    const message: Message = {
-      sender: conversationUser,
-      text: newMessage,
-      time: new Date().toLocaleTimeString([], {
-        hour: "2-digit",
-        minute: "2-digit",
-      }),
-    };
-
-    setMessages([...messages, message]);
-    setNewMessage("");
+  const handleStudentChange = (selected: any) => {
+    setSelectedStudent(selected);
+    if (selected) {
+      setConversationUser(selected.label);
+      setMessages([]);
+    }
   };
 
-  const handleStudentSelectAll = () => {
-    setSelectedStudents(selectedStudents.length === students.length ? [] : students);
+  useEffect(() => {
+    if (selectedStudent && session?.accessToken) {
+      const socket = io("http://localhost:5000", {
+        auth: {
+          token: session.accessToken,
+        },
+      });
+
+      return () => {
+        socket.off("disconnect");
+        socket.close();
+      };
+    }
+  }, [selectedStudent, session]);
+
+  const handleSendMessage = async () => {
+    if (!newMessage.trim() || !selectedStudent) return;
+
+    try {
+      const messagePayload: Partial<Message> = {
+        receiverId: selectedStudent.value,
+        content: newMessage,
+      };
+
+      await sendMessage(messagePayload).unwrap();
+
+      const sentMessage: Message = {
+        senderId: session?.user?.id || "coach",
+        receiverId: selectedStudent.id,
+        content: newMessage,
+      };
+      setMessages((prev) => [...prev, sentMessage]);
+      setNewMessage("");
+    } catch (error) {
+      console.error("Failed to send message:", error);
+    }
   };
 
-  const handleBatchSelectAll = () => {
-    setSelectedBatches(selectedBatches.length === batches.length ? [] : batches);
+  const selectStyles = {
+    control: (provided: any) => ({
+      ...provided,
+      backgroundColor: "#2d3748",
+      borderColor: "#4a5568",
+      color: "white",
+    }),
+    option: (provided: any, state: any) => ({
+      ...provided,
+      backgroundColor: state.isSelected ? "#4a5568" : "#2d3748",
+      color: "white",
+      "&:hover": { backgroundColor: "#4a5568" },
+    }),
+    singleValue: (provided: any) => ({
+      ...provided,
+      color: "white",
+    }),
+    multiValue: (provided: any) => ({
+      ...provided,
+      backgroundColor: "#4a5568",
+    }),
+    multiValueLabel: (provided: any) => ({
+      ...provided,
+      color: "white",
+    }),
+    multiValueRemove: (provided: any) => ({
+      ...provided,
+      color: "white",
+      ":hover": {
+        backgroundColor: "#e53e3e",
+        color: "white",
+      },
+    }),
   };
 
-  const isAllSelectedBatches = selectedBatches.length === batches.length;
-  const isAllSelectedStudents = selectedStudents.length === students.length;
+  const studentOptions = studentsData
+    ? studentsData.map((student: Student) => ({
+        label: `${student.profile.firstName} ${student.profile.lastName}`,
+        value: student.id,
+      }))
+    : [];
 
   return (
-    <div className="flex h-screen bg-gray-900">
-      <div className="w-1/4 bg-gray-800 text-white p-4 flex flex-col">
-        <div className="flex items-center mb-6">
-          <button className="flex flex-col items-center relative mr-6">
+    <div className="flex h-screen bg-gray-900 text-white">
+      <aside className="w-1/4 bg-gray-800 p-4">
+        <div className="flex items-center mb-6 space-x-6">
+          <button
+            aria-label="Unread messages"
+            className="flex items-center text-gray-400 hover:text-white transition duration-300"
+          >
             <FiMessageSquare size={24} />
-            <span className="text-sm">Unread</span>
+            <span className="ml-2 text-lg">Unread</span>
           </button>
-          <button className="flex flex-col items-center">
+          <button
+            aria-label="Inbox messages"
+            className="flex items-center text-gray-400 hover:text-white transition duration-300"
+          >
             <FiInbox size={24} />
-            <span className="text-sm">Inbox</span>
+            <span className="ml-2 text-lg">Inbox</span>
           </button>
         </div>
 
-        <ul className="mb-4">
-          {friendsList.map((friend) => (
-            <li
-              key={friend.value}
-              className="flex items-center p-2 cursor-pointer hover:bg-gray-700"
-              onClick={() => handleUserClick(friend.label)}
-            >
-              <div className="w-8 h-8 rounded-full bg-gray-600 flex items-center justify-center mr-2">
-                <Image
-                  src={friend.image}
-                  alt={friend.label}
-                  width={32}
-                  height={32}
-                  className="rounded-full"
-                />
-              </div>
-              <div>
-                <div className="text-white">{friend.label}</div>
-              </div>
-            </li>
-          ))}
-        </ul>
+        <Select
+          options={
+            batchesData
+              ? batchesData.map((batch: any) => ({
+                  label: batch.batchCode,
+                  value: batch.id,
+                }))
+              : []
+          }
+          value={selectedBatch}
+          onChange={handleBatchChange}
+          placeholder={batchesLoading ? "Loading batches..." : "Select Batch"}
+          styles={selectStyles}
+          isLoading={batchesLoading}
+          className="mb-4"
+        />
 
-        <div className="mb-4">
-          <Select
-            options={batches}
-            isMulti
-            value={selectedBatches}
-            onChange={(selected) => setSelectedBatches(selected as any)}
-            placeholder="Select Batch"
-            styles={{
-              control: (provided) => ({
-                ...provided,
-                backgroundColor: "#2d3748",
-                borderColor: "#4a5568",
-                boxShadow: "none",
-                "&:hover": {
-                  borderColor: "#a0aec0",
-                },
-              }),
-              menu: (provided) => ({
-                ...provided,
-                backgroundColor: "#2d3748",
-              }),
-              option: (provided, state) => ({
-                ...provided,
-                backgroundColor: state.isSelected ? "#4a5568" : "#2d3748",
-                color: "white",
-                "&:hover": {
-                  backgroundColor: "#4a5568",
-                },
-              }),
-            }}
-            className="text-white mb-2"
-          />
-          <button
-            onClick={handleBatchSelectAll}
-            className="p-2 bg-gray-700 text-white rounded hover:bg-gray-600 w-full"
-          >
-            {isAllSelectedBatches ? "Deselect All" : "Select All"}
-          </button>
-        </div>
+        <Select
+          options={studentOptions}
+          value={selectedStudent}
+          onChange={handleStudentChange}
+          placeholder={
+            selectedBatch
+              ? studentsLoading || studentsFetching
+                ? "Loading students..."
+                : "Select Student"
+              : "Select a batch first"
+          }
+          styles={selectStyles}
+          isMulti={false}
+          isDisabled={!selectedBatch || studentsLoading || studentsFetching}
+          isLoading={studentsLoading || studentsFetching}
+          className="mb-4"
+        />
+      </aside>
 
-        <div className="mb-4">
-          <Select
-            options={students}
-            isMulti
-            value={selectedStudents}
-            onChange={(selected) => setSelectedStudents(selected as any)}
-            placeholder="Select Student"
-            styles={{
-              control: (provided) => ({
-                ...provided,
-                backgroundColor: "#2d3748",
-                borderColor: "#4a5568",
-                boxShadow: "none",
-                "&:hover": {
-                  borderColor: "#a0aec0",
-                },
-              }),
-              menu: (provided) => ({
-                ...provided,
-                backgroundColor: "#2d3748",
-              }),
-              option: (provided, state) => ({
-                ...provided,
-                backgroundColor: state.isSelected ? "#4a5568" : "#2d3748",
-                color: "white",
-                "&:hover": {
-                  backgroundColor: "#4a5568",
-                },
-              }),
-            }}
-            className="text-white mb-2"
-          />
-          <button
-            onClick={handleStudentSelectAll}
-            className="p-2 bg-gray-700 text-white rounded hover:bg-gray-600 w-full"
-          >
-            {isAllSelectedStudents ? "Deselect All" : "Select All"}
-          </button>
-        </div>
-
-        <div className="flex-grow" style={{ maxHeight: "50%" }}>
-          <div className="flex flex-col mt-6 overflow-y-auto flex-grow" style={{ maxHeight: "400px" }}>
-            {messages.map((msg, index) => (
-              <div
-                key={index}
-                className={`flex items-center mb-4 ${msg.sender === conversationUser ? "justify-end" : ""}`}
-              >
-                {msg.sender !== conversationUser && (
-                  <div className="w-8 h-8 rounded-full bg-gray-600 flex items-center justify-center mr-2">
-                    <Image
-                      src={friendsList.find((f) => f.label === msg.sender)?.image || "/fallback-image.png"}
-                      alt={msg.sender}
-                      width={32}
-                      height={32}
-                      className="rounded-full"
-                    />
-                  </div>
-                )}
-                <div
-                  className={`${
-                    msg.sender === conversationUser ? "bg-blue-600" : "bg-gray-600"
-                  } text-${msg.sender === conversationUser ? "white" : "black"} p-2 rounded-lg`}
+      <main className="w-3/4 p-6 bg-gray-800 flex flex-col">
+        {conversationUser ? (
+          <>
+            <header className="flex justify-between items-center border-b border-gray-700 pb-3 mb-4">
+              <h2 className="text-2xl font-semibold">
+                Conversation with {conversationUser}
+              </h2>
+              <div className="flex items-center space-x-2">
+                <button
+                  aria-label="Minimize chat"
+                  className="p-2 text-gray-400 hover:text-white transition duration-300"
                 >
-                  {msg.text}
-                </div>
-                <span className="text-gray-800 text-sm ml-2">{msg.time}</span>
+                  <FiMinus size={20} />
+                </button>
+                <button
+                  aria-label="Close chat"
+                  className="p-2 text-gray-400 hover:text-white transition duration-300"
+                  onClick={() => setConversationUser(null)}
+                >
+                  <FiX size={20} />
+                </button>
               </div>
-            ))}
+            </header>
+            <div className="flex-grow overflow-y-auto space-y-4">
+              {messages.map((msg, index) => (
+                <div
+                  key={index}
+                  className={`flex ${
+                    msg.senderId === session?.user?.id
+                      ? "justify-end"
+                      : "justify-start"
+                  }`}
+                >
+                  <div
+                    className={`p-3 rounded-lg transition duration-300 ${
+                      msg.senderId === session?.user?.id
+                        ? "bg-blue-600"
+                        : "bg-gray-600"
+                    }`}
+                  >
+                    <p className="text-white">{msg.content}</p>
+                  </div>
+                  <span className="text-sm text-gray-400 ml-2">
+                    {msg.createdAt
+                      ? new Date(msg.createdAt).toLocaleTimeString([], {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })
+                      : ""}
+                  </span>
+                </div>
+              ))}
+            </div>
+            <div className="mt-4 flex">
+              <input
+                type="text"
+                value={newMessage}
+                onChange={(e) => setNewMessage(e.target.value)}
+                placeholder="Type your message..."
+                className="flex-grow px-4 bg-gray-700 rounded-l-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-300"
+              />
+              <button
+                onClick={handleSendMessage}
+                disabled={isSending}
+                className={`bg-blue-600 p-2 w-1/6 rounded-r-lg text-lg hover:bg-blue-500 focus:ring-2 focus:ring-blue-500 transition duration-300 ${
+                  isSending ? "opacity-50 cursor-not-allowed" : ""
+                }`}
+              >
+                {isSending ? "Sending..." : "Send"}
+              </button>
+            </div>
+          </>
+        ) : (
+          <div className="flex items-center justify-center h-full">
+            <p className="text-xl">Select a student to start a conversation.</p>
           </div>
-
-          <div className="flex mt-4">
-            <input
-              type="text"
-              value={newMessage}
-              onChange={(e) => setNewMessage(e.target.value)}
-              placeholder="Type your message..."
-              className="w-full p-2 bg-gray-700 text-white rounded-l-lg focus:outline-none"
-            />
-            <button
-              onClick={handleSendMessage}
-              className="bg-blue-600 text-white px-4 rounded-r-lg hover:bg-blue-500"
-            >
-              Send
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <div className="w-3/4 p-6 bg-gray-800 text-white flex flex-col">
-        <div className="flex justify-between items-center border-b pb-3 mb-4">
-          <h2 className="text-xl font-semibold">Conversation with {conversationUser}</h2>
-          <div className="flex items-center gap-2">
-            <button className="p-2">
-              <FiMinus size={20} />
-            </button>
-            <button className="p-2">
-              <FiX size={20} />
-            </button>
-          </div>
-        </div>
-
-        <div className="flex-grow overflow-y-auto">
-          {/* Messages will appear here */}
-        </div>
-
-        <div className="flex mt-4">
-          <input
-            type="text"
-            value={newMessage}
-            onChange={(e) => setNewMessage(e.target.value)}
-            placeholder="Type your message..."
-            className="w-full p-2 bg-gray-700 text-white rounded-l-lg focus:outline-none"
-          />
-          <button
-            onClick={handleSendMessage}
-            className="bg-blue-600 text-white px-4 rounded-r-lg hover:bg-blue-500"
-          >
-            Send
-          </button>
-        </div>
-      </div>
+        )}
+      </main>
     </div>
   );
 };

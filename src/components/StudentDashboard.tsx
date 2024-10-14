@@ -1,3 +1,4 @@
+import { useStudentWeeklyGoalsQuery } from "@/api/goalApi";
 import Image from "next/image";
 import Link from "next/link";
 import React from "react";
@@ -19,6 +20,8 @@ const battles: Battle[] = [
 ];
 
 const Dashboard: React.FC = () => {
+  const { data: studentWeeklyGoals = [] } = useStudentWeeklyGoalsQuery({});
+
   return (
     <div className="p-6  text-white   pb-32">
       {/* Top Section */}
@@ -60,8 +63,8 @@ const Dashboard: React.FC = () => {
             className="object-contain"
           />
           <div className="flex flex-col">
-            <p className="text-lg font-bold">Goals Achieved</p>
-            <p className="text-2xl">5</p>
+            <p className="text-lg font-bold">Weekly Goals</p>
+            <p className="text-2xl">{studentWeeklyGoals?.length || "0"}</p>
           </div>
         </div>
 

@@ -3,42 +3,62 @@
 import React, { useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import Cookies from "js-cookie";
-import { useLoginMutation } from "@/api/userApi";
+import { signIn } from "next-auth/react";
+import useLoginOtp from "@/hooks/useLoginOtp";
 
 export default function LoginForm() {
-  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loginMethod, setLoginMethod] = useState("password");
   const router = useRouter();
-  const [login, { isLoading, error }] = useLoginMutation();
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
+  const { setEmail, email } = useLoginOtp();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsLoading(true);
+    setError("");
 
     try {
       if (loginMethod === "password") {
-        const { data } = await login({ email, password });
+        const res = await signIn("credentials", {
+          redirect: false,
+          email,
+          password,
+        });
 
-        console.log("DATA", data);
-
-        if (data) {
-          Cookies.set("auth-token", data.token, { expires: 7, path: "/" });
-
+        if (res?.error) {
+          setError("Invalid email or password.");
+        } else {
           router.push("/student-dashboard");
         }
       } else {
-        router.push("/otp-verification");
+        const res = await fetch(
+          "http://localhost:5000/api/v1/auth/login-without-password",
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email }),
+          }
+        );
+
+        if (res.ok) {
+          router.push("/otp-verification");
+        } else {
+          setError("Failed to send OTP.");
+        }
       }
     } catch (err) {
       console.error("Login failed:", err);
+      setError("An error occurred. Please try again.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
     <div className="flex items-center justify-center h-screen">
       <div className="bg-gray-900 p-10 rounded-lg shadow-lg w-[50%] gap-10">
-        {/* Flex container for welcome message and logo */}
         <div className="flex justify-between items-center mb-6">
           <div className="flex-1">
             <h2 className="text-2xl text-white font-semibold mb-1">
@@ -58,9 +78,7 @@ export default function LoginForm() {
           </div>
         </div>
 
-        {/* Form */}
         <form onSubmit={handleLogin}>
-          {/* Radio buttons for login method */}
           <div className="mb-4 flex justify-around">
             <label className="text-gray-300">
               <input
@@ -86,7 +104,6 @@ export default function LoginForm() {
             </label>
           </div>
 
-          {/* Email Field */}
           <div className="mb-4">
             <label className="block text-gray-300 mb-2">Email:</label>
             <input
@@ -98,7 +115,6 @@ export default function LoginForm() {
             />
           </div>
 
-          {/* Password Field: Only show when login method is "password" */}
           {loginMethod === "password" && (
             <div className="mb-4">
               <label className="block text-gray-300 mb-2">Password:</label>
@@ -111,13 +127,12 @@ export default function LoginForm() {
                   className="w-full px-3 py-2 bg-gray-700 text-gray-300 rounded focus:outline-none focus:ring focus:border-blue-500"
                 />
                 <span className="absolute right-3 top-3 text-gray-400 cursor-pointer">
-                  👁️ {/* Icon for show/hide password */}
+                  👁️
                 </span>
               </div>
             </div>
           )}
 
-          {/* Submit Button */}
           <div className="text-center">
             <button
               type="submit"

@@ -1,62 +1,75 @@
 "use client";
 import React, { useState } from "react";
+
 import { FiMessageSquare, FiInbox, FiMinus, FiX } from "react-icons/fi";
 import Image from "next/image";
+import {
+  useGetConversationsQuery,
+  useGetMessagesQuery,
+  useSendMessageMutation,
+} from "@/api/messageApi";
+
+interface Conversation {
+  userId: string;
+  name: string;
+  image?: string;
+  firstName: string;
+  lastName: string;
+  lastMessage: string;
+  lastMessageTime: string;
+}
 
 interface Message {
-  sender: string;
+  id: string;
+  senderId: string;
+  senderName: string;
+  recipientId: string;
   text: string;
   time: string;
 }
-
-const mockMessages = [
-  { sender: "student1", text: "Hey, how are you?", time: "12:00 PM" },
-  {
-    sender: "student2",
-    text: "I'm good, thanks! How about you?",
-    time: "12:01 PM",
-  },
-  {
-    sender: "student1",
-    text: "Doing well! Just finishing an assignment.",
-    time: "12:02 PM",
-  },
-];
-
-const friendsList = [
-  { label: "student1", value: "student1", image: "/student1.png" },
-  { label: "student2", value: "student2", image: "/student2.png" },
-  { label: "student3", value: "student3", image: "/student3.png" },
-];
-
 const StudentCommunication: React.FC = () => {
-  const [conversationUser, setConversationUser] = useState("student1");
-  const [messages, setMessages] = useState<Message[]>(mockMessages);
+  const [conversationUser, setConversationUser] = useState<string | null>(null);
   const [newMessage, setNewMessage] = useState("");
 
-  const handleUserClick = (userName: string) => {
-    setConversationUser(userName);
+  const {
+    data: conversationsData,
+    isLoading: conversationsLoading,
+    error: conversationsError,
+  } = useGetConversationsQuery({});
+
+  const {
+    data: messagesData,
+    isLoading: messagesLoading,
+    error: messagesError,
+  } = useGetMessagesQuery(conversationUser!, {
+    skip: !conversationUser,
+  });
+
+  const [sendMessage] = useSendMessageMutation();
+
+  const handleUserClick = (userId: string) => {
+    setConversationUser(userId);
   };
 
-  const handleSendMessage = () => {
-    if (newMessage.trim() === "") return;
+  const handleSendMessage = async () => {
+    if (newMessage.trim() === "" || !conversationUser) return;
 
-    const message: Message = {
-      sender: conversationUser,
-      text: newMessage,
-      time: new Date().toLocaleTimeString([], {
-        hour: "2-digit",
-        minute: "2-digit",
-      }),
-    };
+    try {
+      await sendMessage({
+        receiverId: conversationUser,
+        content: newMessage,
+      }).unwrap();
 
-    setMessages([...messages, message]);
-    setNewMessage("");
+      setNewMessage("");
+    } catch (error) {
+      console.error("Failed to send message:", error);
+    }
   };
+
+  console.log(conversationsData);
 
   return (
     <div className="flex h-screen bg-gray-900">
-      {/* Left Sidebar with Friends List */}
       <div className="w-1/4 bg-gray-800 text-white p-4">
         <div className="flex items-center mb-6">
           <button className="flex flex-col items-center relative mr-6">
@@ -69,104 +82,145 @@ const StudentCommunication: React.FC = () => {
           </button>
         </div>
 
-        <ul>
-          {friendsList.map((friend) => (
-            <li
-              key={friend.value}
-              className="flex items-center p-2 cursor-pointer hover:bg-gray-700"
-              onClick={() => handleUserClick(friend.label)}
-            >
-              <div className="w-8 h-8 rounded-full bg-gray-600 flex items-center justify-center mr-2">
-                <Image
-                  src={friend.image}
-                  alt={friend.label}
-                  width={32}
-                  height={32}
-                  className="rounded-full"
-                />
-              </div>
-              <div>
-                <div className="text-white">{friend.label}</div>
-              </div>
-            </li>
-          ))}
-        </ul>
-      </div>
-
-      {/* Chat Section */}
-      <div className="w-3/4 p-6 bg-gray-800 text-white flex flex-col">
-        <div className="flex justify-between items-center border-b pb-3 mb-4">
-          <h2 className="text-xl font-semibold">
-            Conversation with {conversationUser}
-          </h2>
-          <div className="flex items-center gap-2">
-            <button className="p-2">
-              <FiMinus size={20} />
-            </button>
-            <button className="p-2">
-              <FiX size={20} />
-            </button>
-          </div>
-        </div>
-
-        {/* Message List */}
-        <div
-          className="flex flex-col mt-6 overflow-y-auto flex-grow"
-          style={{ maxHeight: "400px" }}
-        >
-          {messages.map((msg, index) => (
-            <div
-              key={index}
-              className={`flex items-center mb-4 ${
-                msg.sender === conversationUser ? "justify-end" : ""
-              }`}
-            >
-              {msg.sender !== conversationUser && (
-                <div className="w-8 h-8 rounded-full bg-gray-600 flex items-center justify-center mr-2">
+        {conversationsLoading ? (
+          <div>Loading conversations...</div>
+        ) : conversationsError ? (
+          <div>Error loading conversations.</div>
+        ) : (
+          <ul>
+            {conversationsData?.map((conversation: Conversation) => (
+              <li
+                key={conversation.userId}
+                className={`flex items-center p-2 cursor-pointer hover:bg-gray-700 rounded-lg ${
+                  conversationUser === conversation.userId ? "bg-gray-700" : ""
+                }`}
+                onClick={() => handleUserClick(conversation.userId)}
+              >
+                <div className="w-8 h-8 rounded-full bg-gray-600 flex items-center justify-center mr-2 ">
                   <Image
-                    src={
-                      friendsList.find((f) => f.label === msg.sender)?.image ||
-                      "/fallback-image.png"
-                    }
-                    alt={msg.sender}
+                    src={conversation.image || "/fallback-image.png"}
+                    alt={conversation.name}
                     width={32}
                     height={32}
                     className="rounded-full"
                   />
                 </div>
-              )}
-              <div
-                className={`${
-                  msg.sender === conversationUser
-                    ? "bg-blue-600"
-                    : "bg-gray-600"
-                } text-${
-                  msg.sender === conversationUser ? "white" : "black"
-                } p-2 rounded-lg`}
-              >
-                {msg.text}
-              </div>
-              <span className="text-gray-800 text-sm ml-2">{msg.time}</span>
-            </div>
-          ))}
-        </div>
+                <div className="text-white w-full">
+                  {conversation.firstName} {conversation.lastName}
+                  <div className="text-xs text-gray-300 flex items-center justify-between w-full">
+                    <p>{conversation.lastMessage}</p>
+                    <p>
+                      {new Date(
+                        conversation.lastMessageTime
+                      ).toLocaleTimeString("en-US", {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                        hour12: true,
+                      })}
+                    </p>
+                  </div>
+                </div>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
 
-        {/* Simple Message Input */}
-        <div className="flex mt-4">
-          <input
-            type="text"
-            value={newMessage}
-            onChange={(e) => setNewMessage(e.target.value)}
-            placeholder="Type your message..."
-            className="w-full p-2 bg-gray-700 text-white rounded-l-lg focus:outline-none"
-          />
-          <button
-            onClick={handleSendMessage}
-            className="bg-blue-600 text-white px-4 rounded-r-lg hover:bg-blue-500"
-          >
-            Send
-          </button>
-        </div>
+      <div className="w-3/4 p-6 bg-gray-800 text-white flex flex-col">
+        {conversationUser ? (
+          <>
+            <div className="flex justify-between items-center border-b pb-3 mb-4">
+              <h2 className="text-xl font-semibold">
+                Conversation with{" "}
+                {
+                  conversationsData?.find((c) => c.userId === conversationUser)
+                    ?.name
+                }
+              </h2>
+              <div className="flex items-center gap-2">
+                <button className="p-2">
+                  <FiMinus size={20} />
+                </button>
+                <button className="p-2">
+                  <FiX size={20} />
+                </button>
+              </div>
+            </div>
+
+            <div
+              className="flex flex-col mt-6 overflow-y-auto flex-grow"
+              style={{ maxHeight: "400px" }}
+            >
+              {messagesLoading ? (
+                <div>Loading messages...</div>
+              ) : messagesError ? (
+                <div>Error loading messages.</div>
+              ) : (
+                messagesData?.map((msg, index) => (
+                  <div
+                    key={msg.id}
+                    className={`flex items-center mb-4 ${
+                      msg.senderId === conversationUser ? "justify-end" : ""
+                    }`}
+                  >
+                    {msg.senderId !== conversationUser && (
+                      <div className="w-8 h-8 rounded-full bg-gray-600 flex items-center justify-center mr-2">
+                        <Image
+                          src={
+                            conversationsData?.find(
+                              (c) => c.userId === msg.receiverId
+                            )?.image || "/fallback-image.png"
+                          }
+                          alt={msg.senderName}
+                          width={32}
+                          height={32}
+                          className="rounded-full"
+                        />
+                      </div>
+                    )}
+                    <div
+                      className={`${
+                        msg.senderId === conversationUser
+                          ? "bg-blue-600"
+                          : "bg-gray-600"
+                      } text-white p-2 rounded-lg`}
+                    >
+                      {msg.content}
+                    </div>
+                    <span className="text-gray-400 text-sm ml-2">
+                      {msg.createdAt
+                        ? new Date(msg.createdAt).toLocaleTimeString([], {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          })
+                        : ""}
+                    </span>
+                  </div>
+                ))
+              )}
+            </div>
+
+            <div className="flex mt-4">
+              <input
+                type="text"
+                value={newMessage}
+                onChange={(e) => setNewMessage(e.target.value)}
+                placeholder="Type your message..."
+                className="w-full p-2 bg-gray-700 text-white rounded-l-lg focus:outline-none"
+              />
+              <button
+                onClick={handleSendMessage}
+                className="bg-blue-600 text-white px-4 rounded-r-lg hover:bg-blue-500"
+              >
+                Send
+              </button>
+            </div>
+          </>
+        ) : (
+          <div className="flex items-center justify-center h-full">
+            <p>Select a conversation to start chatting</p>
+          </div>
+        )}
       </div>
     </div>
   );

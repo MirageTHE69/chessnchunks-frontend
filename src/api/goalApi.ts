@@ -1,8 +1,11 @@
 import { baseApi } from "./baseApi";
 
 export const goalApi = baseApi.injectEndpoints({
-  endpoints: (builder) => ({}),
-  overrideExisting: false,
+  endpoints: (builder) => ({
+    studentWeeklyGoals: builder.query({
+      query: () => `/goal/student-weekly-goals`,
+    }),
+  }),
 });
 
-export const {} = goalApi;
+export const { useStudentWeeklyGoalsQuery } = goalApi;
