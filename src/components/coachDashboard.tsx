@@ -1,26 +1,46 @@
 // components/Dashboard.tsx
 
 "use client";
-
 import React, { useState } from "react";
 import Image from "next/image";
-import { FiMessageSquare, FiInbox, FiMinus, FiX } from "react-icons/fi";
-import { useFetchBatchForOptionsQuery } from "@/api/batchApi"; // Adjust the path as needed
-import {
-  useGetConversationsQuery,
-  useGetMessagesQuery,
-  useSendMessageMutation,
-} from "@/api/messageApi"; // Existing imports
+import { useFetchBatchForOptionsQuery } from "@/api/batchApi";
+
 import {
   useFetchAllSeasonalGoalsQuery,
   useFetchAllWeeklyGoalsQuery,
 } from "@/api/goalApi";
 
-// Data for battles
 interface Battle {
   opponent: string;
   result: string;
   accuracy: number;
+}
+
+interface Student {
+  name: string;
+  progress: string;
+  status: string;
+}
+
+interface Batch {
+  id: string;
+  batchCode: string;
+  startDate: string;
+  _count: {
+    students: number;
+  };
+}
+
+interface SeasonalGoal {
+  id: string;
+  name: string;
+  description: string;
+}
+
+interface WeeklyGoal {
+  id: string;
+  name: string;
+  description: string;
 }
 
 const battles: Battle[] = [
@@ -31,13 +51,6 @@ const battles: Battle[] = [
   { opponent: "Magnus Carlson", result: "🏆", accuracy: 93.23 },
 ];
 
-// Data for students
-interface Student {
-  name: string;
-  progress: string;
-  status: string;
-}
-
 const allStudents: Student[] = [
   { name: "Student 1", progress: "85%", status: "Active" },
   { name: "Student 2", progress: "90%", status: "Active" },
@@ -45,7 +58,6 @@ const allStudents: Student[] = [
   { name: "Student 4", progress: "80%", status: "Active" },
   { name: "Student 5", progress: "95%", status: "Active" },
   { name: "Student 6", progress: "70%", status: "Inactive" },
-  // Add more students as needed
 ];
 
 const Dashboard: React.FC = () => {
@@ -61,27 +73,17 @@ const Dashboard: React.FC = () => {
     error: batchesError,
   } = useFetchBatchForOptionsQuery({});
 
-  const {
-    data: seasonalGoalsData,
-    isLoading: seasonalGoalsLoading,
-    error: seasonalGoalsError,
-  } = useFetchAllSeasonalGoalsQuery({});
+  const { data: seasonalGoalsData } = useFetchAllSeasonalGoalsQuery({});
 
-  const {
-    data: weeklyGoalsData,
-    isLoading: weeklyGoalsLoading,
-    error: weeklyGoalsError,
-  } = useFetchAllWeeklyGoalsQuery({});
+  const { data: weeklyGoalsData } = useFetchAllWeeklyGoalsQuery({});
 
   const seasonalGoalsCount = seasonalGoalsData ? seasonalGoalsData.length : 0;
   const weeklyGoalsCount = weeklyGoalsData ? weeklyGoalsData.length : 0;
 
   return (
     <div className="p-6 text-white pb-32">
-      {/* Top Statistics Section */}
-      <div className="grid grid-cols-3 gap-4 mb-8">
-        {/* Your Batch Rank */}
-        <div className="flex items-center space-x-3 bg-gray-800 p-4 rounded-lg">
+      <div className="grid grid-cols-5 gap-4 mb-8">
+        <div className="flex flex-col items-center space-x-3 bg-gray-800 p-4 rounded-lg">
           <Image
             src="/gridicons_trophy.png"
             alt="Trophy Icon"
@@ -89,14 +91,13 @@ const Dashboard: React.FC = () => {
             height={40}
             className="object-contain"
           />
-          <div className="flex flex-col">
+          <div className="flex flex-col items-center">
             <p className="text-lg font-bold">No. of Seasonal Goals</p>
             <p className="text-2xl">{seasonalGoalsCount}</p>
           </div>
         </div>
 
-        {/* Your Goal */}
-        <div className="flex items-center space-x-3 bg-gray-800 p-4 rounded-lg">
+        <div className="flex flex-col items-center space-x-3 bg-gray-800 p-4 rounded-lg">
           <Image
             src="/flat-color-icons_puzzle.png"
             alt="Puzzle Icon"
@@ -104,14 +105,13 @@ const Dashboard: React.FC = () => {
             height={40}
             className="object-contain"
           />
-          <div className="flex flex-col">
+          <div className="flex flex-col items-center">
             <p className="text-lg font-bold">No. of Weekly Goals</p>
             <p className="text-2xl">{weeklyGoalsCount}</p>
           </div>
         </div>
 
-        {/* Your Lesson */}
-        <div className="flex items-center space-x-3 bg-gray-800 p-4 rounded-lg">
+        <div className="flex flex-col items-center space-x-3 bg-gray-800 p-4 rounded-lg">
           <Image
             src="/ph_play-fill.png"
             alt="Lessons Icon"
@@ -119,16 +119,42 @@ const Dashboard: React.FC = () => {
             height={40}
             className="object-contain"
           />
-          <div className="flex flex-col">
+          <div className="flex flex-col items-center">
             <p className="text-lg font-bold">Your Lesson</p>
             <p className="text-2xl">6</p>
           </div>
         </div>
+
+        <div className="flex flex-col items-center space-x-3 bg-gray-800 p-4 rounded-lg">
+          <Image
+            src="/seasonal-goal-icon.png"
+            alt="Seasonal Goals Icon"
+            width={40}
+            height={40}
+            className="object-contain"
+          />
+          <div className="flex flex-col items-center">
+            <p className="text-lg font-bold">Seasonal Goals</p>
+            <p className="text-2xl">{seasonalGoalsCount}</p>
+          </div>
+        </div>
+
+        <div className="flex flex-col items-center space-x-3 bg-gray-800 p-4 rounded-lg">
+          <Image
+            src="/weekly-goal-icon.png"
+            alt="Weekly Goals Icon"
+            width={40}
+            height={40}
+            className="object-contain"
+          />
+          <div className="flex flex-col items-center">
+            <p className="text-lg font-bold">Weekly Goals</p>
+            <p className="text-2xl">{weeklyGoalsCount}</p>
+          </div>
+        </div>
       </div>
 
-      {/* Main Content Area */}
       <div className="grid grid-cols-2 gap-6">
-        {/* Left Column: Last 5 Battles */}
         <div className="col-span-1">
           <div className="bg-gray-900 p-4 rounded-lg mb-8">
             <h2 className="text-xl font-bold mb-4">Last 5 Battles</h2>
@@ -156,9 +182,7 @@ const Dashboard: React.FC = () => {
           </div>
         </div>
 
-        {/* Right Column: Batches and Students */}
         <div className="col-span-1">
-          {/* Batches Section */}
           <div className="bg-gray-900 p-4 rounded-lg mb-8">
             <h2 className="text-xl font-bold mb-4">Batches</h2>
             {batchesLoading ? (
@@ -175,7 +199,7 @@ const Dashboard: React.FC = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {batchesData?.map((batch) => (
+                  {batchesData?.map((batch: Batch) => (
                     <tr
                       key={batch.id}
                       className="border-t border-gray-700 hover:bg-gray-800 transition-colors"
@@ -196,7 +220,6 @@ const Dashboard: React.FC = () => {
             )}
           </div>
 
-          {/* Coach's Students Section */}
           <div className="bg-gray-900 p-4 rounded-lg">
             <h2 className="text-xl font-bold mb-4">Coach's Students</h2>
             <table className="w-full text-left text-sm">
@@ -208,7 +231,7 @@ const Dashboard: React.FC = () => {
                 </tr>
               </thead>
               <tbody>
-                {displayedStudents.map((student, index) => (
+                {displayedStudents.map((student: Student, index: number) => (
                   <tr
                     key={index}
                     className="border-t border-gray-700 hover:bg-gray-800 transition-colors"
@@ -220,7 +243,6 @@ const Dashboard: React.FC = () => {
                 ))}
               </tbody>
             </table>
-            {/* View More/Less Button */}
             {allStudents.length > 5 && (
               <button
                 className="mt-4 bg-blue-700 px-4 py-2 rounded text-white text-sm hover:bg-blue-600 transition duration-300"
