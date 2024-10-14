@@ -1,4 +1,4 @@
-import CommunicationCoach from "@/components/Communication/Communication";
+import CommunicationCoach from "@/components/Communication/CoachCommunication";
 import StudentCommunication from "@/components/Communication/StudentCommunication";
 
 import React from "react";
