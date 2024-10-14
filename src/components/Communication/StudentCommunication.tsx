@@ -1,6 +1,5 @@
 "use client";
 import React, { useState } from "react";
-
 import { FiMessageSquare, FiInbox, FiMinus, FiX } from "react-icons/fi";
 import Image from "next/image";
 import {
@@ -23,10 +22,11 @@ interface Message {
   id: string;
   senderId: string;
   senderName: string;
-  recipientId: string;
-  text: string;
-  time: string;
+  receiverId: string;
+  content: string;
+  createdAt: string;
 }
+
 const StudentCommunication: React.FC = () => {
   const [conversationUser, setConversationUser] = useState<string | null>(null);
   const [newMessage, setNewMessage] = useState("");
@@ -65,8 +65,6 @@ const StudentCommunication: React.FC = () => {
       console.error("Failed to send message:", error);
     }
   };
-
-  console.log(conversationsData);
 
   return (
     <div className="flex h-screen bg-gray-900">
@@ -133,8 +131,9 @@ const StudentCommunication: React.FC = () => {
               <h2 className="text-xl font-semibold">
                 Conversation with{" "}
                 {
-                  conversationsData?.find((c) => c.userId === conversationUser)
-                    ?.name
+                  conversationsData?.find(
+                    (c: Conversation) => c.userId === conversationUser
+                  )?.name
                 }
               </h2>
               <div className="flex items-center gap-2">
@@ -156,7 +155,7 @@ const StudentCommunication: React.FC = () => {
               ) : messagesError ? (
                 <div>Error loading messages.</div>
               ) : (
-                messagesData?.map((msg, index) => (
+                messagesData?.map((msg: Message) => (
                   <div
                     key={msg.id}
                     className={`flex items-center mb-4 ${
@@ -168,7 +167,7 @@ const StudentCommunication: React.FC = () => {
                         <Image
                           src={
                             conversationsData?.find(
-                              (c) => c.userId === msg.receiverId
+                              (c: Conversation) => c.userId === msg.senderId
                             )?.image || "/fallback-image.png"
                           }
                           alt={msg.senderName}
