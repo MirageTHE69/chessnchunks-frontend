@@ -70,19 +70,24 @@ const CoachCommunication: React.FC = () => {
   };
 
   const handleStudentSelectAll = () => {
-    setSelectedStudents(selectedStudents.length === students.length ? [] : students);
+    setSelectedStudents(
+      selectedStudents.length === students.length ? [] : students
+    );
   };
 
   const handleBatchSelectAll = () => {
-    setSelectedBatches(selectedBatches.length === batches.length ? [] : batches);
+    setSelectedBatches(
+      selectedBatches.length === batches.length ? [] : batches
+    );
   };
 
   const isAllSelectedBatches = selectedBatches.length === batches.length;
   const isAllSelectedStudents = selectedStudents.length === students.length;
 
   return (
-    <div className="flex h-screen bg-gray-900">
-      <div className="w-1/4 bg-gray-800 text-white p-4 flex flex-col">
+    <div className="flex h-screen  pb-14">
+      {/* Left Side Panel */}
+      <div className="w-1/4  text-white p-4 flex flex-col">
         <div className="flex items-center mb-6">
           <button className="flex flex-col items-center relative mr-6">
             <FiMessageSquare size={24} />
@@ -151,7 +156,7 @@ const CoachCommunication: React.FC = () => {
           />
           <button
             onClick={handleBatchSelectAll}
-            className="p-2 bg-gray-700 text-white rounded hover:bg-gray-600 w-full"
+            className="p-2  text-white rounded hover:bg-gray-600 w-full"
           >
             {isAllSelectedBatches ? "Deselect All" : "Select All"}
           </button>
@@ -196,58 +201,14 @@ const CoachCommunication: React.FC = () => {
             {isAllSelectedStudents ? "Deselect All" : "Select All"}
           </button>
         </div>
-
-        <div className="flex-grow" style={{ maxHeight: "50%" }}>
-          <div className="flex flex-col mt-6 overflow-y-auto flex-grow" style={{ maxHeight: "400px" }}>
-            {messages.map((msg, index) => (
-              <div
-                key={index}
-                className={`flex items-center mb-4 ${msg.sender === conversationUser ? "justify-end" : ""}`}
-              >
-                {msg.sender !== conversationUser && (
-                  <div className="w-8 h-8 rounded-full bg-gray-600 flex items-center justify-center mr-2">
-                    <Image
-                      src={friendsList.find((f) => f.label === msg.sender)?.image || "/fallback-image.png"}
-                      alt={msg.sender}
-                      width={32}
-                      height={32}
-                      className="rounded-full"
-                    />
-                  </div>
-                )}
-                <div
-                  className={`${
-                    msg.sender === conversationUser ? "bg-blue-600" : "bg-gray-600"
-                  } text-${msg.sender === conversationUser ? "white" : "black"} p-2 rounded-lg`}
-                >
-                  {msg.text}
-                </div>
-                <span className="text-gray-800 text-sm ml-2">{msg.time}</span>
-              </div>
-            ))}
-          </div>
-
-          <div className="flex mt-4">
-            <input
-              type="text"
-              value={newMessage}
-              onChange={(e) => setNewMessage(e.target.value)}
-              placeholder="Type your message..."
-              className="w-full p-2 bg-gray-700 text-white rounded-l-lg focus:outline-none"
-            />
-            <button
-              onClick={handleSendMessage}
-              className="bg-blue-600 text-white px-4 rounded-r-lg hover:bg-blue-500"
-            >
-              Send
-            </button>
-          </div>
-        </div>
       </div>
 
+      {/* Right Side Chat Panel */}
       <div className="w-3/4 p-6 bg-gray-800 text-white flex flex-col">
         <div className="flex justify-between items-center border-b pb-3 mb-4">
-          <h2 className="text-xl font-semibold">Conversation with {conversationUser}</h2>
+          <h2 className="text-xl font-semibold">
+            Conversation with {conversationUser}
+          </h2>
           <div className="flex items-center gap-2">
             <button className="p-2">
               <FiMinus size={20} />
@@ -260,6 +221,41 @@ const CoachCommunication: React.FC = () => {
 
         <div className="flex-grow overflow-y-auto">
           {/* Messages will appear here */}
+          {messages.map((msg, index) => (
+            <div
+              key={index}
+              className={`flex items-center mb-4 ${
+                msg.sender === conversationUser ? "justify-end" : ""
+              }`}
+            >
+              {msg.sender !== conversationUser && (
+                <div className="w-8 h-8 rounded-full bg-gray-600 flex items-center justify-center mr-2">
+                  <Image
+                    src={
+                      friendsList.find((f) => f.label === msg.sender)?.image ||
+                      "/fallback-image.png"
+                    }
+                    alt={msg.sender}
+                    width={32}
+                    height={32}
+                    className="rounded-full"
+                  />
+                </div>
+              )}
+              <div
+                className={`${
+                  msg.sender === conversationUser
+                    ? "bg-blue-600"
+                    : "bg-gray-600"
+                } text-${
+                  msg.sender === conversationUser ? "white" : "black"
+                } p-2 rounded-lg`}
+              >
+                {msg.text}
+              </div>
+              <span className="text-gray-800 text-sm ml-2">{msg.time}</span>
+            </div>
+          ))}
         </div>
 
         <div className="flex mt-4">
@@ -272,7 +268,7 @@ const CoachCommunication: React.FC = () => {
           />
           <button
             onClick={handleSendMessage}
-            className="bg-blue-600 text-white px-4 rounded-r-lg hover:bg-blue-500"
+            className="p-2 bg-blue-600 rounded-r-lg hover:bg-blue-500"
           >
             Send
           </button>
