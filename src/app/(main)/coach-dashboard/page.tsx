@@ -1,11 +1,11 @@
 "use client";
 import React from "react";
-import StudentDashboard from "@/components/StudentDashboard";
+import CoachDashboard from "@/components/coachDashboard";
 
 function page() {
   return (
     <div>
-      <StudentDashboard />
+      <CoachDashboard />
     </div>
   );
 }
