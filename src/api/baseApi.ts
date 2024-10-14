@@ -33,6 +33,6 @@ const baseQueryWithAuth: BaseQueryFn<
 export const baseApi = createApi({
   reducerPath: "baseApi",
   baseQuery: baseQueryWithAuth,
-  tagTypes: ["AllBatchesOptions"],
+  tagTypes: ["AllBatchesOptions", "SeasonalGoals", "WeeklyGoals"],
   endpoints: () => ({}),
 });

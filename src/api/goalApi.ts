@@ -5,7 +5,19 @@ export const goalApi = baseApi.injectEndpoints({
     studentWeeklyGoals: builder.query({
       query: () => `/goal/student-weekly-goals`,
     }),
+    fetchAllSeasonalGoals: builder.query({
+      query: () => "/goal/seasonal-goals",
+      providesTags: ["SeasonalGoals"],
+    }),
+    fetchAllWeeklyGoals: builder.query({
+      query: () => "/goal/weekly-goals",
+      providesTags: ["WeeklyGoals"],
+    }),
   }),
 });
 
-export const { useStudentWeeklyGoalsQuery } = goalApi;
+export const {
+  useStudentWeeklyGoalsQuery,
+  useFetchAllSeasonalGoalsQuery,
+  useFetchAllWeeklyGoalsQuery,
+} = goalApi;

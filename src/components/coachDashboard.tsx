@@ -1,6 +1,20 @@
-import Image from "next/image";
-import Link from "next/link";
+// components/Dashboard.tsx
+
+"use client";
+
 import React, { useState } from "react";
+import Image from "next/image";
+import { FiMessageSquare, FiInbox, FiMinus, FiX } from "react-icons/fi";
+import { useFetchBatchForOptionsQuery } from "@/api/batchApi"; // Adjust the path as needed
+import {
+  useGetConversationsQuery,
+  useGetMessagesQuery,
+  useSendMessageMutation,
+} from "@/api/messageApi"; // Existing imports
+import {
+  useFetchAllSeasonalGoalsQuery,
+  useFetchAllWeeklyGoalsQuery,
+} from "@/api/goalApi";
 
 // Data for battles
 interface Battle {
@@ -15,30 +29,6 @@ const battles: Battle[] = [
   { opponent: "Ramesh Patel", result: "🚩", accuracy: 53.23 },
   { opponent: "Kamlesh Joshi", result: "🏆", accuracy: 63.23 },
   { opponent: "Magnus Carlson", result: "🏆", accuracy: 93.23 },
-];
-
-// Data for batches
-interface Batch {
-  coachName: string;
-  batchName: string;
-  startDate: string;
-  endDate: string;
-}
-
-const batches: Batch[] = [
-  {
-    coachName: "Coach Amit Sharma",
-    batchName: "Batch A",
-    startDate: "2024-01-10",
-    endDate: "2024-06-10",
-  },
-  {
-    coachName: "Coach Rina Verma",
-    batchName: "Batch B",
-    startDate: "2024-02-15",
-    endDate: "2024-07-15",
-  },
-  // Add more batches as needed
 ];
 
 // Data for students
@@ -59,13 +49,32 @@ const allStudents: Student[] = [
 ];
 
 const Dashboard: React.FC = () => {
-  // State to manage student table expansion
   const [showAllStudents, setShowAllStudents] = useState(false);
 
-  // Determine students to display based on state
   const displayedStudents = showAllStudents
     ? allStudents
     : allStudents.slice(0, 5);
+
+  const {
+    data: batchesData,
+    isLoading: batchesLoading,
+    error: batchesError,
+  } = useFetchBatchForOptionsQuery({});
+
+  const {
+    data: seasonalGoalsData,
+    isLoading: seasonalGoalsLoading,
+    error: seasonalGoalsError,
+  } = useFetchAllSeasonalGoalsQuery({});
+
+  const {
+    data: weeklyGoalsData,
+    isLoading: weeklyGoalsLoading,
+    error: weeklyGoalsError,
+  } = useFetchAllWeeklyGoalsQuery({});
+
+  const seasonalGoalsCount = seasonalGoalsData ? seasonalGoalsData.length : 0;
+  const weeklyGoalsCount = weeklyGoalsData ? weeklyGoalsData.length : 0;
 
   return (
     <div className="p-6 text-white pb-32">
@@ -81,8 +90,8 @@ const Dashboard: React.FC = () => {
             className="object-contain"
           />
           <div className="flex flex-col">
-            <p className="text-lg font-bold">Your Batch Rank</p>
-            <p className="text-2xl">47</p>
+            <p className="text-lg font-bold">No. of Seasonal Goals</p>
+            <p className="text-2xl">{seasonalGoalsCount}</p>
           </div>
         </div>
 
@@ -96,8 +105,8 @@ const Dashboard: React.FC = () => {
             className="object-contain"
           />
           <div className="flex flex-col">
-            <p className="text-lg font-bold">Your Goal</p>
-            <p className="text-2xl">253</p>
+            <p className="text-lg font-bold">No. of Weekly Goals</p>
+            <p className="text-2xl">{weeklyGoalsCount}</p>
           </div>
         </div>
 
@@ -151,30 +160,40 @@ const Dashboard: React.FC = () => {
         <div className="col-span-1">
           {/* Batches Section */}
           <div className="bg-gray-900 p-4 rounded-lg mb-8">
-            <h2 className="text-xl font-bold mb-4">Coach's Batches</h2>
-            <table className="w-full text-left text-sm">
-              <thead>
-                <tr>
-                  <th className="pb-2">Coach Name</th>
-                  <th className="pb-2">Batch Name</th>
-                  <th className="pb-2">Duration</th>
-                </tr>
-              </thead>
-              <tbody>
-                {batches.map((batch, index) => (
-                  <tr
-                    key={index}
-                    className="border-t border-gray-700 hover:bg-gray-800 transition-colors"
-                  >
-                    <td className="py-1">{batch.coachName}</td>
-                    <td className="py-1">{batch.batchName}</td>
-                    <td className="py-1">
-                      {batch.startDate} - {batch.endDate}
-                    </td>
+            <h2 className="text-xl font-bold mb-4">Batches</h2>
+            {batchesLoading ? (
+              <div>Loading batches...</div>
+            ) : batchesError ? (
+              <div>Error loading batches.</div>
+            ) : (
+              <table className="w-full text-left text-sm">
+                <thead>
+                  <tr>
+                    <th className="pb-2">Batch Code</th>
+                    <th className="pb-2">Start Date</th>
+                    <th className="pb-2">Student Count</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {batchesData?.map((batch) => (
+                    <tr
+                      key={batch.id}
+                      className="border-t border-gray-700 hover:bg-gray-800 transition-colors"
+                    >
+                      <td className="py-1">{batch.batchCode}</td>
+                      <td className="py-1">
+                        {new Date(batch.startDate).toLocaleDateString([], {
+                          day: "2-digit",
+                          month: "short",
+                          year: "numeric",
+                        })}
+                      </td>
+                      <td className="py-1">{batch._count.students}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
           </div>
 
           {/* Coach's Students Section */}
