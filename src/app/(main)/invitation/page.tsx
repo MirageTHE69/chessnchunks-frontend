@@ -1,31 +1,83 @@
-"use client"; // Marking this as a Client Component
+"use client";
 
+import { useEffect, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import { MdErrorOutline } from "react-icons/md";
-import { Button } from "../../../components/button2"; // Assuming you have a Button component
-import { IoMailOpenOutline } from "react-icons/io5"; // Make sure you import IoMailOpenOutline if you're using it
+import { IoMailOpenOutline } from "react-icons/io5";
+import { Button } from "@/components/button2";
 
 const StudentVerificationPage = () => {
-  // Hardcoded values for testing the design
-  const type = "BATCH_STUDENT"; // Example type
-  const name = "Sample Batch"; // Example name
-  const loading = false; // Change to true to see loading state
-  const error = false; // Change to true to see error state
+  const router = useRouter();
 
-  // Valid verification types
+  const searchParams = useSearchParams();
+  const type = searchParams.get("type");
+  const batchId = searchParams.get("batchId");
+  const token = searchParams.get("token");
+
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+
   const VALID_STUDENT_VERIFICATION_TYPES = ["BATCH_STUDENT", "USER_INVITATION"];
-  const isValidType = VALID_STUDENT_VERIFICATION_TYPES.includes(type);
+  const isValidType =
+    type && VALID_STUDENT_VERIFICATION_TYPES.includes(type as string);
+
+  useEffect(() => {
+    const verifyInvitation = async () => {
+      if (!isValidType || !token || !batchId) {
+        setError("Invalid or missing verification parameters.");
+        setLoading(false);
+        return;
+      }
+
+      console.log("IS VALID TYPE", isValidType);
+      console.log("TOKEN", token);
+      console.log("BATCH ID", batchId);
+
+      try {
+        const response = await fetch(
+          `http://localhost:5000/api/v1/student/verify-student?token=${token}`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
+
+        const data = await response.json();
+
+        if (response.ok) {
+          setSuccessMessage(
+            data?.message || "Invitation accepted successfully!"
+          );
+        } else {
+          setError(data.message || "Failed to accept the invitation.");
+        }
+      } catch (err: any) {
+        console.log(err);
+        setError(
+          err.message || "An unexpected error occurred during verification."
+        );
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    verifyInvitation();
+  }, [type, batchId, token, isValidType]);
 
   const MESSAGE =
     type === "BATCH_STUDENT"
-      ? `You have been invited as a student to join the batch <span class="font-bold text-white">${name}</span>. 
-      <p class="mt-2">We are thrilled to have you join us and look forward to your learning journey.</p>`
+      ? `You have been invited as a student to join the batch <span class="font-bold text-white">${batchId}</span>. 
+          <p class="mt-2">We are thrilled to have you join us and look forward to your learning journey.</p>`
       : `You have successfully accepted the invitation.`;
 
   if (!isValidType) {
     return (
       <main className="h-screen flex items-center justify-center w-full p-4">
-        <div className="max-w-md w-full  rounded-lg shadow-2xl shadow-black/10 overflow-hidden p-6 mx-auto">
+        <div className="max-w-md w-full rounded-lg shadow-2xl shadow-black/10 overflow-hidden p-6 mx-auto">
           <div className="text-center">
             <div className="flex items-center justify-center mb-4">
               <div className="bg-red-100 h-20 w-20 rounded-full flex items-center justify-center">
@@ -39,7 +91,9 @@ const StudentVerificationPage = () => {
               The invitation link is invalid or the invitation type is not
               supported.
             </p>
-            <Button className="mt-4">Back to Home</Button>
+            <Button onClick={() => router.push("/")} className="mt-4">
+              Back to Home
+            </Button>
           </div>
         </div>
       </main>
@@ -50,13 +104,28 @@ const StudentVerificationPage = () => {
     <main className="h-screen flex items-center justify-center w-full p-4">
       <div className="max-w-md w-full bg-gray-900 rounded-lg shadow-2xl shadow-black/10 overflow-hidden p-6 mx-auto">
         <div className="text-center">
-          {loading && !error ? (
+          {loading ? (
             <div className="flex flex-col items-center">
               <AiOutlineLoading3Quarters className="h-6 w-6 text-white animate-spin mb-4" />
               <p className="text-gray-600 text-sm">Accepting Invitation...</p>
             </div>
+          ) : error ? (
+            <div>
+              <div className="flex items-center justify-center mb-4">
+                <div className="bg-red-100 h-20 w-20 rounded-full flex items-center justify-center">
+                  <MdErrorOutline className="h-10 w-10 text-red-600" />
+                </div>
+              </div>
+              <h4 className="text-red-700 text-xl font-semibold">
+                Verification Failed
+              </h4>
+              <p className="text-gray-600 text-sm mt-4">{error}</p>
+              <Button onClick={() => router.push("/")} className="mt-4">
+                Back to Home
+              </Button>
+            </div>
           ) : (
-            <>
+            <div>
               <div className="flex items-center justify-center mb-4">
                 <div className="bg-blue-100 h-20 w-20 rounded-full flex items-center justify-center">
                   <IoMailOpenOutline className="h-8 w-8 text-white" />
@@ -67,11 +136,17 @@ const StudentVerificationPage = () => {
                 className="text-white text-sm my-4"
                 dangerouslySetInnerHTML={{ __html: MESSAGE }}
               />
-              <Button className="mt-4">Back to Home</Button>
-              <Button className="mt-4" variant="outline">
+              <Button onClick={() => router.push("/")} className="mt-4">
+                Back to Home
+              </Button>
+              <Button
+                onClick={() => router.push("/login")}
+                variant="outline"
+                className="mt-4"
+              >
                 Login
               </Button>
-            </>
+            </div>
           )}
         </div>
       </div>
