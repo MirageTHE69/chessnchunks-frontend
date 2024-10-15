@@ -52,6 +52,7 @@ export const authOptions: NextAuthOptions = {
             name: `${data.user.profile.firstName} ${data.user.profile.lastName}`,
             email: data.user.email,
             accessToken: data.token,
+            role: data.user.role as "student" | "coach",
           };
         } else {
           throw new Error(data.message || "Login failed");
@@ -63,14 +64,25 @@ export const authOptions: NextAuthOptions = {
     async jwt({ token, user }) {
       if (user) {
         token.accessToken = user.accessToken;
-        token.user = user;
+        token.user = {
+          id: user.id,
+          name: user.name,
+          email: user.email,
+          role: user.role,
+        };
       }
       return token;
     },
     async session({ session, token }) {
       session.accessToken = token.accessToken;
       if (token && session.user) {
-        session.user = token.user;
+        session.user = {
+          ...session.user,
+          id: token?.user?.id as string,
+          name: token?.user?.name as string,
+          email: token?.user?.email as string,
+          role: token?.user?.role as "student" | "coach",
+        };
       }
       return session;
     },
