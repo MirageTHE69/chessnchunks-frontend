@@ -18,9 +18,12 @@ export const Header = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  const isHideSidebar = ["/sign-up", "/login", "/otp-verification"].includes(
-    pathname
-  );
+  const isHideSidebar = [
+    "/sign-up",
+    "/login",
+    "/otp-verification",
+    "/invitation",
+  ].includes(pathname);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {

@@ -20,8 +20,6 @@ export const authOptions: NextAuthOptions = {
 
         let res;
         if (isWithOTP) {
-          console.log(isWithOTP);
-
           res = await fetch("http://localhost:5000/api/v1/auth/verify-login", {
             method: "POST",
             headers: { "Content-Type": "application/json" },

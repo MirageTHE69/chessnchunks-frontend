@@ -14,6 +14,7 @@ const StudentVerificationPage = () => {
   const type = searchParams.get("type");
   const batchId = searchParams.get("batchId");
   const token = searchParams.get("token");
+  const name = searchParams.get("name");
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -25,15 +26,11 @@ const StudentVerificationPage = () => {
 
   useEffect(() => {
     const verifyInvitation = async () => {
-      if (!isValidType || !token || !batchId) {
+      if (!isValidType || !token) {
         setError("Invalid or missing verification parameters.");
         setLoading(false);
         return;
       }
-
-      console.log("IS VALID TYPE", isValidType);
-      console.log("TOKEN", token);
-      console.log("BATCH ID", batchId);
 
       try {
         const response = await fetch(
@@ -56,7 +53,6 @@ const StudentVerificationPage = () => {
           setError(data.message || "Failed to accept the invitation.");
         }
       } catch (err: any) {
-        console.log(err);
         setError(
           err.message || "An unexpected error occurred during verification."
         );
@@ -66,13 +62,30 @@ const StudentVerificationPage = () => {
     };
 
     verifyInvitation();
-  }, [type, batchId, token, isValidType]);
+  }, [type, batchId, token, isValidType, name]);
 
   const MESSAGE =
-    type === "BATCH_STUDENT"
-      ? `You have been invited as a student to join the batch <span class="font-bold text-white">${batchId}</span>. 
-          <p class="mt-2">We are thrilled to have you join us and look forward to your learning journey.</p>`
-      : `You have successfully accepted the invitation.`;
+    type === "BATCH_STUDENT" ? (
+      <>
+        <p>
+          Hello{" "}
+          <span className="font-bold text-white">{name || "Student"}</span>, you
+          have been invited as a student to join the batch{" "}
+          <span className="font-bold text-white">{batchId}</span>.
+        </p>
+        <p className="mt-2">
+          We are thrilled to have you join us and look forward to your learning
+          journey.
+        </p>
+      </>
+    ) : (
+      <>
+        <p>
+          Hello <span className="font-bold text-white">{name || "User"}</span>,
+          you have successfully accepted the invitation.
+        </p>
+      </>
+    );
 
   if (!isValidType) {
     return (
@@ -132,10 +145,7 @@ const StudentVerificationPage = () => {
                 </div>
               </div>
               <h4 className="text-white text-xl font-semibold">Success!</h4>
-              <p
-                className="text-white text-sm my-4"
-                dangerouslySetInnerHTML={{ __html: MESSAGE }}
-              />
+              <div className="text-white text-sm my-4">{MESSAGE}</div>{" "}
               <Button onClick={() => router.push("/")} className="mt-4">
                 Back to Home
               </Button>
