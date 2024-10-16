@@ -16,8 +16,19 @@ export const userApi = baseApi.injectEndpoints({
         body: data,
       }),
     }),
+    fetchProfileById: builder.query({
+      query: (id) => ({
+        url: `/user/profile/${id}`,
+        method: "GET",
+      }),
+    }),
   }),
   overrideExisting: false,
 });
 
-export const { useSignUpMutation, useLoginMutation } = userApi;
+export const {
+  useSignUpMutation,
+  useLoginMutation,
+  useLazyFetchProfileByIdQuery,
+  useFetchProfileByIdQuery,
+} = userApi;
