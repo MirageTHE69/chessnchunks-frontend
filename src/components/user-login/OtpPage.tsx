@@ -44,7 +44,7 @@ function OtpVerification() {
         code,
         isWithOTP: "true",
       });
-
+ 
       if (!result?.error) {
         router.push("/student-dashboard");
       }
