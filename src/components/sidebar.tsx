@@ -6,9 +6,19 @@ import Link from "next/link";
 import { SidebarItem } from "./sidebar-item";
 import { Button } from "./button";
 import { usePathname } from "next/navigation";
+import { useSession } from "next-auth/react";
 
 export const Sidebar = () => {
   const pathname = usePathname();
+  const { data: session, status } = useSession();
+  const filteredRoutes = sidebarRoutes.filter((route) => {
+    
+    if (session?.user?.role === "STUDENT" as "student") {
+      return !["Play", "Puzzle run", "Quiz"].includes(route.name);
+    }
+    return true; 
+  });
+
 
   const isHideSidebar = [
     "/sign-up",
@@ -39,7 +49,7 @@ export const Sidebar = () => {
 
       {/* Navigation */}
       <nav className="space-y-2 mt-8 flex-grow">
-        {sidebarRoutes.map((route) => (
+        {filteredRoutes.map((route) => (
           <SidebarItem
             key={route.href}
             name={route.name}

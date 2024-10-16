@@ -27,6 +27,7 @@ declare module "next-auth/jwt" {
       id: string;
       name: string;
       email: string;
+      role?: "student" | "coach";
     };
   }
 }
