@@ -25,7 +25,7 @@ const LoginOTPProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const resetOtp = () => {
-    setOtp(["", "", "", ""]);
+    setOtp(["", "", "", "", "", ""]);
   };
 
   return (
