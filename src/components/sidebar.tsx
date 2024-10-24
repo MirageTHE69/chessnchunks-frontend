@@ -12,13 +12,11 @@ export const Sidebar = () => {
   const pathname = usePathname();
   const { data: session, status } = useSession();
   const filteredRoutes = sidebarRoutes.filter((route) => {
-    
-    if (session?.user?.role === "STUDENT" as "student") {
+    if (session?.user?.role === "STUDENT") {
       return !["Play", "Puzzle run", "Quiz"].includes(route.name);
     }
-    return true; 
+    return true;
   });
-
 
   const isHideSidebar = [
     "/sign-up",

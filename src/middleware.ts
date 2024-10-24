@@ -9,38 +9,26 @@ export default withAuth(
 
     // console.log(role)
 
-    if (
-      role === ("STUDENT" as "student") &&
-      pathname === "/assign-puzzle-coach"
-    ) {
+    if (role === "STUDENT" && pathname === "/assign-puzzle-coach") {
       return Response.redirect(new URL("/", req.url));
     }
-    if (
-      role === ("STUDENT" as "student") &&
-      pathname === "/assign-quiz-coach"
-    ) {
+    if (role === "STUDENT" && pathname === "/assign-quiz-coach") {
       return Response.redirect(new URL("/", req.url));
     }
-    if (role === ("STUDENT" as "student") && pathname === "/play-with-batch") {
+    if (role === "STUDENT" && pathname === "/play-with-batch") {
       return Response.redirect(new URL("/", req.url));
     }
-    if (role === ("STUDENT" as "student") && pathname === "/coach-dashboard") {
+    if (role === "STUDENT" && pathname === "/coach-dashboard") {
       return Response.redirect(new URL("/student-dashboard", req.url));
     }
-    if (
-      role === ("STUDENT" as "student") &&
-      pathname === "/coach-communication"
-    ) {
+    if (role === "STUDENT" && pathname === "/coach-communication") {
       return Response.redirect(new URL("/student-communication", req.url));
     }
 
-    if (role === ("COACH" as "coach") && pathname === "/student-dashboard") {
+    if (role === "COACH" && pathname === "/student-dashboard") {
       return Response.redirect(new URL("/coach-dashboard", req.url));
     }
-    if (
-      role === ("COACH" as "coach") &&
-      pathname === "/student-communication"
-    ) {
+    if (role === "COACH" && pathname === "/student-communication") {
       return Response.redirect(new URL("/coach-communication", req.url));
     }
   },

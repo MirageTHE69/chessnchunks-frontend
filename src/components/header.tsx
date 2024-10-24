@@ -11,12 +11,14 @@ import {
 } from "react-icons/fa";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { signOut } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 
 export const Header = () => {
   const pathname = usePathname();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+
+  const { data } = useSession();
 
   const isHideSidebar = [
     "/sign-up",
@@ -59,7 +61,13 @@ export const Header = () => {
 
       {/* Icons */}
       <div className="flex space-x-6 text-white items-center">
-        <Link href="/chat-communication">
+        <Link
+          href={
+            data?.user?.role === "STUDENT"
+              ? "/student-communication"
+              : "/coach-communication"
+          }
+        >
           <FaEnvelope
             className="cursor-pointer hover:text-gray-400"
             size={20}

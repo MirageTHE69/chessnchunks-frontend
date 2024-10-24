@@ -7,7 +7,7 @@ declare module "next-auth" {
       id: string;
       name: string;
       email: string;
-      role?: "student" | "coach";
+      role?: "STUDENT" | "COACH";
     };
   }
 
@@ -16,7 +16,7 @@ declare module "next-auth" {
     name: string;
     email: string;
     accessToken?: string;
-    role?: "student" | "coach";
+    role?: "STUDENT" | "COACH";
   }
 }
 
@@ -27,7 +27,7 @@ declare module "next-auth/jwt" {
       id: string;
       name: string;
       email: string;
-      role?: "student" | "coach";
+      role?: "STUDENT" | "COACH";
     };
   }
 }

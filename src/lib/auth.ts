@@ -50,7 +50,7 @@ export const authOptions: NextAuthOptions = {
             name: `${data.user.profile.firstName} ${data.user.profile.lastName}`,
             email: data.user.email,
             accessToken: data.token,
-            role: data.user.role as "student" | "coach",
+            role: data.user.role as "STUDENT" | "COACH",
           };
         } else {
           throw new Error(data.message || "Login failed");
@@ -79,7 +79,7 @@ export const authOptions: NextAuthOptions = {
           id: token?.user?.id as string,
           name: token?.user?.name as string,
           email: token?.user?.email as string,
-          role: token?.user?.role as "student" | "coach",
+          role: token?.user?.role as "STUDENT" | "COACH",
         };
       }
       return session;
