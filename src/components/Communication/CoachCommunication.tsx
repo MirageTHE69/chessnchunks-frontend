@@ -6,8 +6,23 @@ import { io } from "socket.io-client";
 import { useSession } from "next-auth/react";
 import { useFetchBatchForOptionsQuery } from "@/api/batchApi";
 import { useLazyFetchAllStudentsQuery } from "@/api/studentApi";
-import { useGetMessagesQuery, useSendMessageMutation } from "@/api/messageApi";
-import { Message, Student } from "@/types";
+import {
+  useGetConversationsQuery,
+  useGetMessagesQuery,
+  useSendMessageMutation,
+} from "@/api/messageApi";
+import { Student, Message } from "@/types";
+import Image from "next/image";
+
+interface Conversation {
+  userId: string;
+  name: string;
+  image?: string;
+  firstName: string;
+  lastName: string;
+  lastMessage: string;
+  lastMessageTime: string;
+}
 
 const CoachCommunication: React.FC = () => {
   const [conversationUser, setConversationUser] = useState<string | null>(null);
@@ -20,14 +35,25 @@ const CoachCommunication: React.FC = () => {
 
   const [sendMessage, { isLoading: isSending }] = useSendMessageMutation();
 
-  // Fetch batches
   const { data: batchesData, isLoading: batchesLoading } =
     useFetchBatchForOptionsQuery({});
 
+  const activeConversationUser = selectedStudent
+    ? selectedStudent.value
+    : conversationUser;
+
   const { data: messageHistory, refetch: refetchMessages } =
-    useGetMessagesQuery(selectedStudent?.value, {
-      skip: !selectedStudent,
+    useGetMessagesQuery(activeConversationUser!, {
+      skip: !activeConversationUser,
     });
+
+  console.log("SELECTED STUDENT", selectedStudent);
+
+  const {
+    data: conversationsData,
+    isLoading: conversationsLoading,
+    error: conversationsError,
+  } = useGetConversationsQuery({});
 
   useEffect(() => {
     if (messageHistory) {
@@ -69,7 +95,19 @@ const CoachCommunication: React.FC = () => {
         },
       });
 
+      socket.on("receiveMessage", (message: Message) => {
+        if (
+          (message.senderId === selectedStudent.value &&
+            message.receiverId === session?.user?.id) ||
+          (message.senderId === session?.user?.id &&
+            message.receiverId === selectedStudent.value)
+        ) {
+          setMessages((prev) => [...prev, message]);
+        }
+      });
+
       return () => {
+        socket.off("receiveMessage");
         socket.off("disconnect");
         socket.close();
       };
@@ -77,19 +115,19 @@ const CoachCommunication: React.FC = () => {
   }, [selectedStudent, session]);
 
   const handleSendMessage = async () => {
-    if (!newMessage.trim() || !selectedStudent) return;
+    if (!newMessage.trim() || !activeConversationUser) return;
 
     try {
       const messagePayload: Partial<Message> = {
-        receiverId: selectedStudent.value,
+        receiverId: activeConversationUser,
         content: newMessage,
       };
 
       await sendMessage(messagePayload).unwrap();
 
-      const sentMessage: Message = {
+      const sentMessage = {
         senderId: session?.user?.id || "coach",
-        receiverId: selectedStudent.id,
+        receiverId: activeConversationUser,
         content: newMessage,
       };
       setMessages((prev) => [...prev, sentMessage]);
@@ -98,7 +136,6 @@ const CoachCommunication: React.FC = () => {
       console.error("Failed to send message:", error);
     }
   };
-
   const selectStyles = {
     control: (provided: any) => ({
       ...provided,
@@ -141,9 +178,21 @@ const CoachCommunication: React.FC = () => {
       }))
     : [];
 
+  const conversationOptions = conversationsData
+    ? conversationsData.map((conversation: Conversation) => ({
+        label: `${conversation.firstName} ${conversation.lastName}`,
+        value: conversation.userId,
+        image: conversation.image || "/fallback-image.png",
+        lastMessage: conversation.lastMessage,
+        lastMessageTime: conversation.lastMessageTime,
+      }))
+    : [];
+
   return (
     <div className="flex h-screen bg-gray-900 text-white">
-      <aside className="w-1/4 bg-gray-800 p-4">
+      {/* Sidebar */}
+      <aside className="w-1/4 bg-gray-800 p-4 overflow-y-auto">
+        {/* Action Buttons */}
         <div className="flex items-center mb-6 space-x-6">
           <button
             aria-label="Unread messages"
@@ -161,6 +210,7 @@ const CoachCommunication: React.FC = () => {
           </button>
         </div>
 
+        {/* Batch Selector */}
         <Select
           options={
             batchesData
@@ -178,6 +228,7 @@ const CoachCommunication: React.FC = () => {
           className="mb-4"
         />
 
+        {/* Student Selector */}
         <Select
           options={studentOptions}
           value={selectedStudent}
@@ -193,16 +244,80 @@ const CoachCommunication: React.FC = () => {
           isMulti={false}
           isDisabled={!selectedBatch || studentsLoading || studentsFetching}
           isLoading={studentsLoading || studentsFetching}
-          className="mb-4"
+          className="mb-6"
         />
+
+        {/* Conversations List */}
+        <div>
+          <h3 className="text-lg font-semibold mb-2">Conversations</h3>
+          {conversationsLoading ? (
+            <div>Loading conversations...</div>
+          ) : conversationsError ? (
+            <div>Error loading conversations.</div>
+          ) : conversationsData && conversationsData.length > 0 ? (
+            <ul>
+              {conversationsData.map((conversation: Conversation) => (
+                <li
+                  key={conversation.userId}
+                  className={`flex items-center p-2 cursor-pointer hover:bg-gray-700 rounded-lg ${
+                    conversationUser === conversation.userId
+                      ? "bg-gray-700"
+                      : ""
+                  }`}
+                  onClick={() => setConversationUser(conversation.userId)}
+                >
+                  <div className="bg-blue-500 text-white rounded-full h-8 w-8 p-2 flex items-center justify-center  mr-2">
+                    {conversation.firstName && conversation?.lastName
+                      ? `${conversation?.firstName.charAt(
+                          0
+                        )}${conversation?.lastName.charAt(0)}`.toUpperCase()
+                      : conversation?.firstName
+                      ? conversation?.firstName.charAt(0).toUpperCase()
+                      : "U"}
+                  </div>
+                  <div className="text-white w-full">
+                    {conversation.firstName} {conversation.lastName}
+                    <div className="text-xs text-gray-300 flex items-center justify-between w-full">
+                      <p>{conversation.lastMessage}</p>
+                      <p>
+                        {conversation.lastMessageTime
+                          ? new Date(
+                              conversation.lastMessageTime
+                            ).toLocaleTimeString("en-US", {
+                              hour: "2-digit",
+                              minute: "2-digit",
+                              hour12: true,
+                            })
+                          : ""}
+                      </p>
+                    </div>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <div>No conversations found.</div>
+          )}
+        </div>
       </aside>
 
+      {/* Main Chat Area */}
       <main className="w-3/4 p-6 bg-gray-800 flex flex-col">
         {conversationUser ? (
           <>
+            {/* Chat Header */}
             <header className="flex justify-between items-center border-b border-gray-700 pb-3 mb-4">
               <h2 className="text-2xl font-semibold">
-                Conversation with {conversationUser}
+                Conversation with{" "}
+                {`${
+                  conversationsData?.find(
+                    (c: Conversation) => c.userId === conversationUser
+                  )?.firstName
+                } ${
+                  conversationsData?.find(
+                    (c: Conversation) => c.userId === conversationUser
+                  )?.lastName
+                }`}
               </h2>
               <div className="flex items-center space-x-2">
                 <button
@@ -220,36 +335,60 @@ const CoachCommunication: React.FC = () => {
                 </button>
               </div>
             </header>
+
+            {/* Messages */}
             <div className="flex-grow overflow-y-auto space-y-4">
-              {messages.map((msg, index) => (
-                <div
-                  key={index}
-                  className={`flex ${
-                    msg.senderId === session?.user?.id
-                      ? "justify-end"
-                      : "justify-start"
-                  }`}
-                >
+              {messages.length === 0 ? (
+                <div>No messages yet. Start the conversation!</div>
+              ) : (
+                messages.map((msg: Message) => (
                   <div
-                    className={`p-3 rounded-lg transition duration-300 ${
+                    key={msg.id}
+                    className={`flex ${
                       msg.senderId === session?.user?.id
-                        ? "bg-blue-600"
-                        : "bg-gray-600"
+                        ? "justify-end"
+                        : "justify-start"
                     }`}
                   >
-                    <p className="text-white">{msg.content}</p>
+                    {msg.senderId !== session?.user?.id && (
+                      <div className="w-8 h-8 rounded-full bg-gray-600 flex items-center justify-center mr-2">
+                        <Image
+                          src={
+                            conversationsData?.find(
+                              (c: Conversation) => c.userId === msg.senderId
+                            )?.image || "/fallback-image.png"
+                          }
+                          alt={"1"}
+                          width={32}
+                          height={32}
+                          className="rounded-full"
+                        />
+                      </div>
+                    )}
+                    <div
+                      className={`${
+                        msg.senderId === session?.user?.id
+                          ? "bg-blue-600"
+                          : "bg-gray-600"
+                      } text-white p-2 rounded-lg`}
+                    >
+                      {msg.content}
+                    </div>
+                    <span className="text-gray-400 text-sm ml-2">
+                      {msg.createdAt
+                        ? new Date(msg.createdAt).toLocaleTimeString("en-US", {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                            hour12: true,
+                          })
+                        : ""}
+                    </span>
                   </div>
-                  <span className="text-sm text-gray-400 ml-2">
-                    {msg.createdAt
-                      ? new Date(msg.createdAt).toLocaleTimeString([], {
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        })
-                      : ""}
-                  </span>
-                </div>
-              ))}
+                ))
+              )}
             </div>
+
+            {/* Message Input */}
             <div className="mt-4 flex">
               <input
                 type="text"
@@ -271,7 +410,7 @@ const CoachCommunication: React.FC = () => {
           </>
         ) : (
           <div className="flex items-center justify-center h-full">
-            <p className="text-xl">Select a student to start a conversation.</p>
+            <p className="text-xl">Select a conversation to start chatting.</p>
           </div>
         )}
       </main>

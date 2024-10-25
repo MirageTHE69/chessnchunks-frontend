@@ -1,9 +1,15 @@
+"use client";
+
+import { useFetchAllTasksQuery } from "@/api/taskApi";
 import { PageHeader } from "@/components/page-header";
 import Image from "next/image";
 
-
 // Remove the unused 'props' parameter as it's not required right now.
 export default function Page() {
+  const { data } = useFetchAllTasksQuery({});
+
+  console.log("DATA", data);
+
   return (
     <div className="w-full min-h-screen p-8 text-white">
       {/* Page Header */}
@@ -120,26 +126,20 @@ export default function Page() {
 
           {/* Tasks Today */}
           <div className="bg-[#1B2A41] rounded-lg p-6 mb-4">
-            <h4 className="text-xl font-semibold mb-4">10 tasks today</h4>
+            <h4 className="text-xl font-semibold mb-4">
+              {data?.length || 0} Tasks today
+            </h4>
             <div className="space-y-4">
-              {[
-                {
-                  task: "Complete the 4 puzzles assigned by coach",
-                  assignee: "Nihar40000",
-                },
-                {
-                  task: "Complete the 4 puzzles assigned by coach",
-                  assignee: "Nihar40000",
-                },
-              ].map((item, index) => (
+              {data?.map((el, index) => (
                 <div
                   key={index}
                   className="bg-[#132032] p-4 rounded-lg flex justify-between items-center"
                 >
                   <div>
-                    <p className="font-semibold">{item.task}</p>
+                    <p className="font-semibold">{el?.description}</p>
                     <p className="text-gray-400 text-sm">
-                      Assigned by {item.assignee}
+                      Assigned by{" "}
+                      {`${el.createdBy?.profile?.firstName} ${el.createdBy?.profile?.lastName}`}
                     </p>
                   </div>
                   <span className="bg-gray-700 text-gray-300 px-2 py-1 rounded text-xs">
