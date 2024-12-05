@@ -1,6 +1,6 @@
 import { LuMonitorPlay } from "react-icons/lu";
 import { FaPuzzlePiece } from "react-icons/fa6";
-import { MdOutlineQuiz } from "react-icons/md";
+import { MdEvent, MdOutlineQuiz } from "react-icons/md";
 import { GoGoal } from "react-icons/go";
 import { IconType } from "react-icons";
 import { FaTasks } from "react-icons/fa";
@@ -36,6 +36,11 @@ const sidebarRoutes: SidebarRoute[] = [
     name: "Learn",
     icon: GoGoal,
     href: "/assign-homework-coach",
+  },
+  {
+    name: "Events",
+    icon: MdEvent,
+    href: "/events",
   },
 ];
 

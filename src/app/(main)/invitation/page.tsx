@@ -20,7 +20,11 @@ const StudentVerificationPage = () => {
   const [error, setError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
-  const VALID_STUDENT_VERIFICATION_TYPES = ["BATCH_STUDENT", "USER_INVITATION"];
+  const VALID_STUDENT_VERIFICATION_TYPES = [
+    "BATCH_STUDENT",
+    "USER_INVITATION",
+    "BATCH_COACH",
+  ];
   const isValidType =
     type && VALID_STUDENT_VERIFICATION_TYPES.includes(type as string);
 
@@ -33,8 +37,15 @@ const StudentVerificationPage = () => {
       }
 
       try {
+        let endpoint = "";
+        if (type === "BATCH_COACH") {
+          endpoint = "coach/verify-coach";
+        } else {
+          endpoint = "student/verify-student";
+        }
+
         const response = await fetch(
-          `http://localhost:5000/api/v1/student/verify-student?token=${token}`,
+          `http://localhost:5000/api/v1/${endpoint}?token=${token}`,
           {
             method: "POST",
             headers: {
@@ -64,28 +75,50 @@ const StudentVerificationPage = () => {
     verifyInvitation();
   }, [type, batchId, token, isValidType, name]);
 
-  const MESSAGE =
-    type === "BATCH_STUDENT" ? (
-      <>
-        <p>
-          Hello{" "}
-          <span className="font-bold text-white">{name || "Student"}</span>, you
-          have been invited as a student to join the batch{" "}
-          <span className="font-bold text-white">{batchId}</span>.
-        </p>
-        <p className="mt-2">
-          We are thrilled to have you join us and look forward to your learning
-          journey.
-        </p>
-      </>
-    ) : (
-      <>
-        <p>
-          Hello <span className="font-bold text-white">{name || "User"}</span>,
-          you have successfully accepted the invitation.
-        </p>
-      </>
-    );
+  const MESSAGE = (() => {
+    switch (type) {
+      case "BATCH_STUDENT":
+        return (
+          <>
+            <p>
+              Hello{" "}
+              <span className="font-bold text-white">{name || "Student"}</span>,
+              you have been invited as a student to join the batch{" "}
+              <span className="font-bold text-white">{batchId}</span>.
+            </p>
+            <p className="mt-2">
+              We are thrilled to have you join us and look forward to your
+              learning journey.
+            </p>
+          </>
+        );
+      case "BATCH_COACH":
+        return (
+          <>
+            <p>
+              Hello{" "}
+              <span className="font-bold text-white">{name || "Coach"}</span>,
+              you have been invited as a coach to join the batch{" "}
+              <span className="font-bold text-white">{batchId}</span>.
+            </p>
+            <p className="mt-2">
+              Welcome aboard! We look forward to your contribution in guiding
+              our students.
+            </p>
+          </>
+        );
+      default:
+        return (
+          <>
+            <p>
+              Hello{" "}
+              <span className="font-bold text-white">{name || "User"}</span>,
+              you have successfully accepted the invitation.
+            </p>
+          </>
+        );
+    }
+  })();
 
   if (!isValidType) {
     return (

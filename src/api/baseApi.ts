@@ -21,6 +21,8 @@ const baseQueryWithAuth: BaseQueryFn<
       if (session?.accessToken) {
         headers.set("x-auth-token", session.accessToken);
       }
+
+      headers.set("x-origin-host", window.location.host);
       return headers;
     },
   });
@@ -33,6 +35,6 @@ const baseQueryWithAuth: BaseQueryFn<
 export const baseApi = createApi({
   reducerPath: "baseApi",
   baseQuery: baseQueryWithAuth,
-  tagTypes: ["AllBatchesOptions", "SeasonalGoals", "WeeklyGoals"],
+  tagTypes: ["AllBatchesOptions", "SeasonalGoals", "WeeklyGoals", "Events"],
   endpoints: () => ({}),
 });

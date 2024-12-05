@@ -4,10 +4,16 @@ import React from "react";
 type Props = {
   className?: string;
   children: React.ReactNode;
-  type: "submit" | "button";
+  type?: "submit" | "button";
+  onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void;
 };
 
-export const Button = ({ children, className, type = "button" }: Props) => {
+export const Button = ({
+  children,
+  className,
+  type = "button",
+  onClick,
+}: Props) => {
   return (
     <button
       className={cn(
@@ -15,6 +21,7 @@ export const Button = ({ children, className, type = "button" }: Props) => {
         className
       )}
       type={type}
+      onClick={onClick}
     >
       {children}
     </button>
