@@ -5,16 +5,22 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
 import useLoginOtp from "@/hooks/useLoginOtp";
+import { Eye, EyeOff } from "lucide-react";
 
-export default function LoginForm() {
-  const [password, setPassword] = useState("");
-  const [loginMethod, setLoginMethod] = useState("password");
+type LoginMethod = "password" | "otp";
+
+interface LoginFormProps {}
+
+export default function LoginForm({}: LoginFormProps) {
+  const [password, setPassword] = useState<string>("");
+  const [loginMethod, setLoginMethod] = useState<LoginMethod>("password");
+  const [showPassword, setShowPassword] = useState<boolean>(false);
   const router = useRouter();
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string>("");
   const { setEmail, email } = useLoginOtp();
 
-  const handleLogin = async (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsLoading(true);
     setError("");
@@ -57,100 +63,121 @@ export default function LoginForm() {
   };
 
   return (
-    <div className="flex items-center justify-center h-screen">
-      <div className="bg-gray-900 p-10 rounded-lg shadow-lg w-[50%] gap-10">
-        <div className="flex justify-between items-center mb-6">
-          <div className="flex-1">
-            <h2 className="text-2xl text-white font-semibold mb-1">
-              Welcome Back
-            </h2>
-            <p className="text-gray-400">Pickup where you left</p>
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-black-primary to-black-secondary p-4">
+      <div className="w-full max-w-xl bg-black-secondary/50 backdrop-blur-sm rounded-2xl shadow-2xl p-8 space-y-8">
+        {/* Header Section */}
+        <div className="flex justify-between items-center">
+          <div className="space-y-2">
+            <h2 className="text-3xl font-bold text-white">Welcome Back!</h2>
+            <p className="text-gray-primary/80">
+              Continue your learning journey
+            </p>
           </div>
-          <div className="relative h-16 w-16 ml-4">
+          <div className="relative h-16 w-16">
             <Image
               src="/chessnchunks-logo.svg"
               alt="Chess n Chunks"
-              layout="fill"
-              objectFit="contain"
-              loading="lazy"
-              quality={100}
+              fill
+              className="object-contain"
+              priority
             />
           </div>
         </div>
 
-        <form onSubmit={handleLogin}>
-          <div className="mb-4 flex justify-around">
-            <label className="text-gray-300">
-              <input
-                type="radio"
-                name="loginMethod"
-                value="password"
-                checked={loginMethod === "password"}
-                onChange={() => setLoginMethod("password")}
-                className="mr-2"
-              />
-              Login with Password
-            </label>
-            <label className="text-gray-300">
-              <input
-                type="radio"
-                name="loginMethod"
-                value="otp"
-                checked={loginMethod === "otp"}
-                onChange={() => setLoginMethod("otp")}
-                className="mr-2"
-              />
-              Login with OTP
-            </label>
+        {/* Login Form */}
+        <form onSubmit={handleLogin} className="space-y-6">
+          {/* Login Method Selection */}
+          <div className="flex justify-center gap-8">
+            {["password", "otp"].map((method) => (
+              <label
+                key={method}
+                className="relative flex items-center group cursor-pointer"
+              >
+                <input
+                  type="radio"
+                  name="loginMethod"
+                  value={method}
+                  checked={loginMethod === method}
+                  onChange={() => setLoginMethod(method as LoginMethod)}
+                  className="sr-only peer"
+                />
+                <div className="w-5 h-5 border-2 border-gray-primary rounded-full peer-checked:border-blue-500 peer-checked:before:content-[''] peer-checked:before:block peer-checked:before:w-3 peer-checked:before:h-3 peer-checked:before:rounded-full peer-checked:before:bg-blue-500 peer-checked:before:absolute peer-checked:before:top-1 peer-checked:before:left-1 transition-all"></div>
+                <span className="ml-3 text-gray-primary group-hover:text-white transition-colors">
+                  Login with {method.charAt(0).toUpperCase() + method.slice(1)}
+                </span>
+              </label>
+            ))}
           </div>
 
-          <div className="mb-4">
-            <label className="block text-gray-300 mb-2">Email:</label>
+          {/* Email Input */}
+          <div className="space-y-2">
+            <label
+              htmlFor="email"
+              className="block text-gray-primary text-sm font-medium"
+            >
+              Email Address
+            </label>
             <input
+              id="email"
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="Enter Email id"
-              className="w-full px-3 py-2 bg-gray-700 text-gray-300 rounded focus:outline-none focus:ring focus:border-blue-500"
+              placeholder="Enter your email"
+              className="w-full px-4 py-3 bg-black-primary/50 text-white rounded-lg border border-gray-primary/20 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-all"
             />
           </div>
 
+          {/* Password Input */}
           {loginMethod === "password" && (
-            <div className="mb-4">
-              <label className="block text-gray-300 mb-2">Password:</label>
+            <div className="space-y-2">
+              <label
+                htmlFor="password"
+                className="block text-gray-primary text-sm font-medium"
+              >
+                Password
+              </label>
               <div className="relative">
                 <input
-                  type="password"
+                  id="password"
+                  type={showPassword ? "text" : "password"}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Enter Password"
-                  className="w-full px-3 py-2 bg-gray-700 text-gray-300 rounded focus:outline-none focus:ring focus:border-blue-500"
+                  placeholder="Enter your password"
+                  className="w-full px-4 py-3 bg-black-primary/50 text-white rounded-lg border border-gray-primary/20 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-all"
                 />
-                <span className="absolute right-3 top-3 text-gray-400 cursor-pointer">
-                  👁️
-                </span>
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-primary hover:text-white transition-colors"
+                >
+                  {showPassword ? (
+                    <EyeOff className="w-5 h-5" />
+                  ) : (
+                    <Eye className="w-5 h-5" />
+                  )}
+                </button>
               </div>
             </div>
           )}
 
-          <div className="text-center">
-            <button
-              type="submit"
-              className="w-full bg-blue-600 text-white py-2 mt-10 rounded hover:bg-blue-700 transition"
-              disabled={isLoading}
-            >
-              {isLoading
-                ? "Processing..."
-                : loginMethod === "otp"
-                ? "Next"
-                : "Submit"}
-            </button>
-            {error && (
-              <p className="mt-2 text-red-500 text-sm">
-                Login failed. Please try again.
-              </p>
+          {error && <p className="text-red-500 text-sm text-center">{error}</p>}
+
+          <button
+            type="submit"
+            disabled={isLoading}
+            className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white py-3 px-4 rounded-lg font-medium transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed mt-6"
+          >
+            {isLoading ? (
+              <div className="flex items-center justify-center gap-2">
+                <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                <span>Processing...</span>
+              </div>
+            ) : loginMethod === "otp" ? (
+              "Send OTP"
+            ) : (
+              "Sign In"
             )}
-          </div>
+          </button>
         </form>
       </div>
     </div>

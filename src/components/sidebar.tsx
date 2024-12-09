@@ -23,6 +23,7 @@ export const Sidebar = () => {
     "/login",
     "/otp-verification",
     "/invitation",
+    "/complete-signup",
   ].includes(pathname);
 
   if (isHideSidebar) return null;

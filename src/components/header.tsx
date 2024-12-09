@@ -25,6 +25,7 @@ export const Header = () => {
     "/login",
     "/otp-verification",
     "/invitation",
+    "/complete-signup",
   ].includes(pathname);
 
   useEffect(() => {
