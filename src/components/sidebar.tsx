@@ -24,6 +24,8 @@ export const Sidebar = () => {
     "/otp-verification",
     "/invitation",
     "/complete-signup",
+    "/checkout/success",
+    "/checkout/cancel",
   ].includes(pathname);
 
   if (isHideSidebar) return null;

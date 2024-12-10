@@ -17,6 +17,8 @@ function LoginForm() {
     try {
       const { data } = await login({ email, password });
 
+      console.log("DATA", data);
+
       if (data) {
         Cookies.set("auth-token", data.token, { expires: 7, path: "/" });
         router.push("/student-dashboard");

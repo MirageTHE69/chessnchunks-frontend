@@ -36,11 +36,11 @@ export default function CheckoutSuccessPage() {
     <div className="min-h-screen bg-black-primary text-white">
       <div className="absolute top-4 left-4">
         <button
-          onClick={() => router.push("/")}
+          onClick={() => router.push("/dashboard")}
           className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors"
         >
           <ChevronLeft className="w-5 h-5" />
-          Return to Home
+          Return to Dashboard
         </button>
       </div>
 
@@ -61,47 +61,29 @@ export default function CheckoutSuccessPage() {
             </motion.div>
 
             <div className="space-y-2">
-              <h1 className="text-2xl font-bold">
-                Welcome to Chess in Chunks!
-              </h1>
+              <h1 className="text-2xl font-bold">Payment Successful!</h1>
               <p className="text-gray-400">
-                Your registration has been completed successfully.
+                Thank you for your purchase. Your transaction has been
+                completed.
               </p>
             </div>
 
             <div className="mt-8 space-y-6">
-              <div className="grid gap-4">
-                <motion.div
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.4 }}
-                  className="flex items-start gap-4 bg-black-primary p-4 rounded-lg border border-gray-800"
-                >
-                  <Mail className="w-6 h-6 text-blue-500 mt-1 flex-shrink-0" />
-                  <div className="space-y-1">
-                    <h3 className="font-medium">Check Your Email</h3>
-                    <p className="text-sm text-gray-400">
-                      We've sent your login credentials to your registered email
-                      address. Please check your inbox.
-                    </p>
-                  </div>
-                </motion.div>
-
-                <motion.div
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.6 }}
-                  className="flex items-start gap-4 bg-black-primary p-4 rounded-lg border border-gray-800"
-                >
-                  <div className="space-y-1">
-                    <h3 className="font-medium">Get Started</h3>
-                    <p className="text-sm text-gray-400">
-                      After logging in, you can access your dashboard, view your
-                      enrolled classes, and start your chess journey.
-                    </p>
-                  </div>
-                </motion.div>
-              </div>
+              <motion.div
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.4 }}
+                className="flex items-start gap-4 bg-black-primary p-4 rounded-lg border border-gray-800"
+              >
+                <Mail className="w-6 h-6 text-blue-500 mt-1 flex-shrink-0" />
+                <div className="space-y-1">
+                  <h3 className="font-medium">Order Confirmation</h3>
+                  <p className="text-sm text-gray-400">
+                    We've sent a confirmation email with your credential
+                    details.
+                  </p>
+                </div>
+              </motion.div>
             </div>
 
             <motion.p
@@ -110,7 +92,7 @@ export default function CheckoutSuccessPage() {
               transition={{ delay: 0.8 }}
               className="text-sm text-gray-400 mt-6"
             >
-              Redirecting to login page in {countdown} seconds...
+              Redirecting to dashboard in {countdown} seconds...
             </motion.p>
           </div>
 
@@ -121,10 +103,10 @@ export default function CheckoutSuccessPage() {
             className="space-y-3"
           >
             <button
-              onClick={() => router.push("/login")}
+              onClick={() => router.push("/dashboard")}
               className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 px-4 rounded-lg font-medium transition-colors"
             >
-              Go to Login
+              Go to Dashboard
             </button>
           </motion.div>
 
@@ -134,7 +116,7 @@ export default function CheckoutSuccessPage() {
             transition={{ delay: 1.2 }}
             className="text-center text-xs text-gray-500"
           >
-            Reference ID: {sessionId}
+            Transaction ID: {sessionId}
           </motion.p>
         </motion.div>
       </div>
