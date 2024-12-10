@@ -4,7 +4,10 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { ChevronRight, ChevronLeft, Check, CreditCard } from "lucide-react";
-import { useFetchSignUpByIdQuery } from "@/api/userSignupApi";
+import {
+  useFetchSignUpByIdQuery,
+  useCreateCheckoutSessionMutation,
+} from "@/api/userSignUpApi";
 import { UserSignUp } from "@/types/userSignUp";
 import { useSearchParams } from "next/navigation";
 import { useFetchAcademyProgramsQuery } from "@/api/academyProgramApi";
@@ -37,6 +40,9 @@ export default function CompleteSignupPage() {
   const token = searchParams.get("token");
   const id = searchParams.get("id");
 
+  const [createCheckoutSession, { isLoading: isLoadingCheckout }] =
+    useCreateCheckoutSessionMutation();
+
   const {
     data: userData,
     isLoading: isLoadingSignup,
@@ -66,26 +72,16 @@ export default function CompleteSignupPage() {
   const handlePayment = async () => {
     if (!selectedPlan) return;
 
-    setIsLoading(true);
     try {
-      const response = await fetch("/api/payment/process", {
-        method: "POST",
-        body: JSON.stringify({
-          planId: selectedPlan.id,
-          signupId: userData?.signupId,
-        }),
-      });
+      const response = await createCheckoutSession({
+        programId: selectedPlan.id,
+        userEmail: userData?.email,
+      }).unwrap();
 
-      if (response.ok) {
-        setCurrentStep(4);
-        toast.success("Payment successful!");
-      } else {
-        throw new Error("Payment failed");
-      }
+      window.location.href = response.sessionUrl;
     } catch (error) {
-      toast.error("Payment processing failed. Please try again.");
-    } finally {
-      setIsLoading(false);
+      console.error("Failed to create checkout session:", error);
+      toast.error("Failed to initiate checkout. Please try again.");
     }
   };
 
